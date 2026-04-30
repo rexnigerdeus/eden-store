@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+/* --- NOTRE THEME WALMART --- */
+@theme {
+  --color-walmart-blue: #0071ce;
+  --color-walmart-darkBlue: #041e42;
+  --color-walmart-yellow: #ffc220;
+  --color-walmart-light: #f2f8fd;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
