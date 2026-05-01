@@ -134,7 +134,9 @@ export default async function AdminOverviewPage() {
                   <div>
                     <p className="font-medium text-gray-900">{order.customer_name}</p>
                     <p className="text-sm text-gray-500 mt-1">
-                      A acheté chez <span className="font-medium text-walmart-darkBlue">{order.shops?.name}</span>
+                      A acheté chez <span className="font-medium text-walmart-darkBlue">
+                        {(order.shops as any)?.name || (order.shops as any)?.[0]?.name}
+                      </span>
                     </p>
                   </div>
                   <div className="flex flex-col md:items-end">
