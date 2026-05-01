@@ -48,22 +48,22 @@ export default async function EditProductPage({
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="max-w-2xl mx-auto space-y-4 sm:space-y-6">
       
-      <div className="flex items-center space-x-4 mb-8">
-        <Link href="/seller/dashboard/products" className="text-gray-500 hover:text-walmart-blue font-medium">
+      <div className="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
+        <Link href="/seller/dashboard/products" className="text-sm sm:text-base text-gray-500 hover:text-walmart-blue font-medium">
           &larr; Retour
         </Link>
-        <h1 className="text-2xl font-semibold text-walmart-darkBlue">Modifier le produit</h1>
+        <h1 className="text-xl sm:text-2xl font-semibold text-walmart-darkBlue">Modifier le produit</h1>
       </div>
 
-      <form action={saveChanges} className="bg-white p-8 rounded-xl border border-gray-100 shadow-sm space-y-6">
+      <form action={saveChanges} className="bg-white p-5 sm:p-8 rounded-xl border border-gray-100 shadow-sm space-y-5 sm:space-y-6">
         
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">Nom du produit</label>
           <input
             id="title" name="title" type="text" required defaultValue={product.title}
-            className="w-full px-4 py-3 text-gray-900 border border-gray-200 rounded-lg focus:ring-2 focus:ring-walmart-blue outline-none"
+            className="w-full px-3 py-2.5 sm:px-4 sm:py-3 text-sm sm:text-base text-gray-900 border border-gray-200 rounded-lg focus:ring-2 focus:ring-walmart-blue outline-none"
           />
         </div>
 
@@ -71,7 +71,7 @@ export default async function EditProductPage({
           <label htmlFor="category_id" className="block text-sm font-medium text-gray-700 mb-1">Catégorie</label>
           <select 
             id="category_id" name="category_id" required defaultValue={product.category_id || ''}
-            className="w-full px-4 py-3 text-gray-900 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-walmart-blue outline-none cursor-pointer"
+            className="w-full px-3 py-2.5 sm:px-4 sm:py-3 text-sm sm:text-base text-gray-900 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-walmart-blue outline-none cursor-pointer"
           >
             <option value="">Sélectionnez une catégorie...</option>
             {categories?.map((cat) => (
@@ -86,7 +86,7 @@ export default async function EditProductPage({
           <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">Description</label>
           <textarea
             id="description" name="description" rows={4} required defaultValue={product.description}
-            className="w-full px-4 py-3 text-gray-900 border border-gray-200 rounded-lg focus:ring-2 focus:ring-walmart-blue outline-none resize-none"
+            className="w-full px-3 py-2.5 sm:px-4 sm:py-3 text-sm sm:text-base text-gray-900 border border-gray-200 rounded-lg focus:ring-2 focus:ring-walmart-blue outline-none resize-none"
           />
         </div>
 
@@ -94,12 +94,12 @@ export default async function EditProductPage({
           <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">Prix (FCFA)</label>
           <input
             id="price" name="price" type="number" min="0" step="1" required defaultValue={product.price}
-            className="w-full px-4 py-3 text-gray-900 border border-gray-200 rounded-lg focus:ring-2 focus:ring-walmart-blue outline-none"
+            className="w-full px-3 py-2.5 sm:px-4 sm:py-3 text-sm sm:text-base text-gray-900 border border-gray-200 rounded-lg focus:ring-2 focus:ring-walmart-blue outline-none"
           />
         </div>
 
-        <div className="pt-4 border-t border-gray-100 flex justify-end">
-          <button type="submit" className="px-6 py-3 bg-walmart-yellow text-walmart-darkBlue font-semibold rounded-lg hover:bg-yellow-400 transition-colors shadow-sm">
+        <div className="pt-4 sm:pt-6 border-t border-gray-100 flex justify-center sm:justify-end mt-2 sm:mt-0">
+          <button type="submit" className="w-full sm:w-auto px-6 py-2.5 sm:py-3 text-sm sm:text-base bg-walmart-yellow text-walmart-darkBlue font-semibold rounded-lg hover:bg-yellow-400 transition-colors shadow-sm">
             Enregistrer les modifications
           </button>
         </div>

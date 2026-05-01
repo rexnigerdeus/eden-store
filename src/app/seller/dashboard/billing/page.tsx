@@ -28,28 +28,28 @@ export default async function BillingPage() {
   const currentStatus = statusLabels[shop?.subscription_status || 'unpaid']
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
       
       {/* En-tête */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-walmart-darkBlue">Abonnement & Facturation</h1>
-          <p className="text-gray-500 mt-1">Gérez votre accès à la marketplace Asim.</p>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0">
+        <div className="w-full sm:w-auto">
+          <h1 className="text-xl sm:text-2xl font-semibold text-walmart-darkBlue">Abonnement & Facturation</h1>
+          <p className="text-sm sm:text-base text-gray-500 mt-1">Gérez votre accès à la marketplace EDEN store.</p>
         </div>
-        <div className={`px-4 py-2 rounded-full font-semibold text-sm ${currentStatus.color}`}>
+        <div className={`w-full sm:w-auto text-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-semibold text-xs sm:text-sm ${currentStatus.color}`}>
           Statut : {currentStatus.text}
         </div>
       </div>
 
       {/* Message si compte actif */}
       {shop?.subscription_status === 'active' && (
-        <div className="bg-green-50 border border-green-200 p-6 rounded-xl flex items-center">
-          <span className="text-3xl mr-4">🎉</span>
+        <div className="bg-green-50 border border-green-200 p-4 sm:p-6 rounded-xl flex flex-col sm:flex-row items-start sm:items-center">
+          <span className="text-2xl sm:text-3xl mr-0 sm:mr-4 mb-2 sm:mb-0">🎉</span>
           <div>
-            <h3 className="text-lg font-medium text-green-900">Votre boutique est en ligne !</h3>
-            <p className="text-green-700">Votre abonnement est actif. Vous pouvez recevoir des commandes.</p>
+            <h3 className="text-base sm:text-lg font-medium text-green-900">Votre boutique est en ligne !</h3>
+            <p className="text-sm sm:text-base text-green-700">Votre abonnement est actif. Vous pouvez recevoir des commandes.</p>
             {shop?.subscription_end_date && (
-              <p className="text-sm font-medium text-green-800 mt-2">
+              <p className="text-xs sm:text-sm font-medium text-green-800 mt-1 sm:mt-2">
                 Valable jusqu'au : {new Date(shop.subscription_end_date).toLocaleDateString('fr-FR')}
               </p>
             )}
@@ -62,29 +62,29 @@ export default async function BillingPage() {
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
           
           {/* Tarifs */}
-          <div className="p-8 border-b border-gray-100 bg-walmart-light">
-            <h2 className="text-xl font-semibold text-walmart-darkBlue mb-6">
+          <div className="p-5 sm:p-8 border-b border-gray-100 bg-walmart-light">
+            <h2 className="text-lg sm:text-xl font-semibold text-walmart-darkBlue mb-4 sm:mb-6">
               Choisissez votre formule ({isPartner ? 'Tarif Partenaire' : 'Tarif Standard'})
             </h2>
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               
-              <div className="bg-white p-6 rounded-xl border-2 border-transparent hover:border-walmart-blue transition-colors shadow-sm">
-                <h3 className="text-lg font-medium text-gray-900">Mensuel</h3>
-                <p className="text-3xl font-bold text-walmart-blue mt-4">{monthlyPrice} <span className="text-sm text-gray-500 font-normal">/ mois</span></p>
-                <ul className="mt-6 space-y-3 text-sm text-gray-600">
+              <div className="bg-white p-5 sm:p-6 rounded-xl border-2 border-transparent hover:border-walmart-blue transition-colors shadow-sm">
+                <h3 className="text-base sm:text-lg font-medium text-gray-900">Mensuel</h3>
+                <p className="text-2xl sm:text-3xl font-bold text-walmart-blue mt-2 sm:mt-4">{monthlyPrice} <span className="text-xs sm:text-sm text-gray-500 font-normal">/ mois</span></p>
+                <ul className="mt-4 sm:mt-6 space-y-2 sm:space-y-3 text-xs sm:text-sm text-gray-600">
                   <li>✓ Boutique en ligne 24/7</li>
                   <li>✓ Gestion des commandes</li>
                   <li>✓ Sans engagement</li>
                 </ul>
               </div>
 
-              <div className="bg-walmart-darkBlue text-white p-6 rounded-xl border-2 border-walmart-yellow shadow-lg relative">
-                <div className="absolute top-0 right-0 bg-walmart-yellow text-walmart-darkBlue text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-lg">
+              <div className="bg-walmart-darkBlue text-white p-5 sm:p-6 rounded-xl border-2 border-walmart-yellow shadow-lg relative">
+                <div className="absolute top-0 right-0 bg-walmart-yellow text-walmart-darkBlue text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-1 rounded-bl-lg rounded-tr-lg">
                   ÉCONOMISEZ
                 </div>
-                <h3 className="text-lg font-medium">Annuel</h3>
-                <p className="text-3xl font-bold text-walmart-yellow mt-4">{annualPrice} <span className="text-sm text-white/70 font-normal">/ an</span></p>
-                <ul className="mt-6 space-y-3 text-sm text-gray-300">
+                <h3 className="text-base sm:text-lg font-medium">Annuel</h3>
+                <p className="text-2xl sm:text-3xl font-bold text-walmart-yellow mt-2 sm:mt-4">{annualPrice} <span className="text-xs sm:text-sm text-white/70 font-normal">/ an</span></p>
+                <ul className="mt-4 sm:mt-6 space-y-2 sm:space-y-3 text-xs sm:text-sm text-gray-300">
                   <li>✓ Tous les avantages mensuels</li>
                   <li>✓ Économie sur l'année</li>
                   <li>✓ Visibilité boostée</li>
@@ -95,10 +95,10 @@ export default async function BillingPage() {
           </div>
 
           {/* Instructions de paiement */}
-          <div className="p-8">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Instructions de paiement</h3>
-            <div className="bg-gray-50 p-6 rounded-lg mb-6">
-              <ol className="list-decimal list-inside space-y-4 text-gray-700">
+          <div className="p-5 sm:p-8">
+            <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-3 sm:mb-4">Instructions de paiement</h3>
+            <div className="bg-gray-50 p-4 sm:p-6 rounded-lg mb-5 sm:mb-6">
+              <ol className="list-decimal list-inside space-y-3 sm:space-y-4 text-xs sm:text-sm text-gray-700">
                 <li>Effectuez le transfert du montant choisi via <strong>Wave</strong> au <span className="font-bold text-blue-600">01 02 03 04 05</span> ou <strong>Orange Money</strong> au <span className="font-bold text-orange-500">07 08 09 10 11</span>.</li>
                 <li>Mettez le nom de votre boutique en motif du transfert.</li>
                 <li>Cliquez sur le bouton ci-dessous pour nous notifier de votre paiement.</li>
@@ -106,12 +106,12 @@ export default async function BillingPage() {
             </div>
 
             {shop?.subscription_status === 'pending_verification' ? (
-              <div className="text-center p-4 bg-orange-50 text-orange-800 rounded-lg font-medium">
+              <div className="text-center p-3 sm:p-4 text-xs sm:text-sm bg-orange-50 text-orange-800 rounded-lg font-medium">
                 ⏳ Nous vérifions votre paiement. Votre compte sera activé sous peu.
               </div>
             ) : (
               <form action={notifyPaymentMade}>
-                <button type="submit" className="w-full py-4 bg-walmart-blue text-white font-bold rounded-lg hover:bg-blue-700 transition-colors shadow-md">
+                <button type="submit" className="w-full py-3 sm:py-4 text-sm sm:text-base bg-walmart-blue text-white font-bold rounded-lg hover:bg-blue-700 transition-colors shadow-md">
                   J'ai effectué mon transfert Mobile Money
                 </button>
               </form>

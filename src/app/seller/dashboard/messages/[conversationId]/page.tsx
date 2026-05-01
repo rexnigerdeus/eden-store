@@ -39,9 +39,9 @@ export default async function SellerChatPage({
     .order('created_at', { ascending: true })
 
   return (
-    <div className="max-w-4xl space-y-6">
+    <div className="max-w-4xl space-y-4 sm:space-y-6">
       <div>
-        <Link href="/seller/dashboard/messages" className="text-gray-500 hover:text-blue-600 font-medium flex items-center gap-2 w-fit mb-4">
+        <Link href="/seller/dashboard/messages" className="text-sm sm:text-base text-gray-500 hover:text-blue-600 font-medium flex items-center gap-1.5 sm:gap-2 w-fit mb-3 sm:mb-4">
           &larr; Retour aux messages
         </Link>
       </div>

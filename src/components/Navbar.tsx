@@ -34,15 +34,15 @@ export default async function Navbar() {
   return (
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16 gap-4">
+        <div className="flex justify-between items-center h-14 sm:h-16 gap-2 sm:gap-4">
           
           {/* Logo */}
           <Link href="/" className="flex-shrink-0 flex items-center">
-            <span className="text-2xl md:text-3xl font-bold text-walmart-blue tracking-tight">ASIM</span>
+            <span className="text-xl sm:text-2xl md:text-3xl font-bold text-walmart-blue tracking-tight">EDEN store</span>
           </Link>
 
           {/* Barre de recherche globale (Boutiques ou Produits) */}
-          <div className="flex-1 max-w-2xl hidden md:flex mx-8">
+          <div className="flex-1 max-w-2xl hidden md:flex lg:mx-8">
             <div className="relative w-full shadow-sm rounded-full">
               <input 
                 type="text" 
@@ -54,8 +54,8 @@ export default async function Navbar() {
           </div>
 
           {/* Liens de droite */}
-          <div className="flex items-center gap-4 md:gap-6">
-            <Link href="/track" className="text-gray-600 hover:text-walmart-blue font-medium hidden md:flex items-center gap-2 transition-colors">
+          <div className="flex items-center gap-3 sm:gap-4 md:gap-6">
+            <Link href="/track" className="text-sm sm:text-base text-gray-600 hover:text-walmart-blue font-medium hidden md:flex items-center gap-2 transition-colors">
               <span>📦</span> Suivre ma commande
             </Link>
 
@@ -63,13 +63,13 @@ export default async function Navbar() {
             <CartIcon />
 
             {user ? (
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3 sm:gap-4">
                 
                 {/* 🔴 L'ICÔNE MESSAGES AVEC SA PASTILLE GLOBALE 🔴 */}
                 <Link href="/account/messages" className="relative text-gray-600 hover:text-walmart-blue transition-colors p-1 flex items-center justify-center">
-                  <span className="text-xl">💬</span>
+                  <span className="text-lg sm:text-xl">💬</span>
                   {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-white shadow-sm animate-pulse">
+                    <span className="absolute -top-1 -right-1 sm:-top-1.5 sm:-right-1.5 bg-red-500 text-white text-[8px] sm:text-[10px] font-bold w-3.5 h-3.5 sm:w-4 sm:h-4 flex items-center justify-center rounded-full border border-white shadow-sm animate-pulse">
                       {unreadCount}
                     </span>
                   )}
@@ -82,13 +82,13 @@ export default async function Navbar() {
 
                 {/* Déconnexion */}
                 <form action="/auth/signout" method="post">
-                  <button type="submit" className="text-red-500 hover:text-red-700 font-medium transition-colors text-sm">
+                  <button type="submit" className="text-red-500 hover:text-red-700 font-medium transition-colors text-xs sm:text-sm">
                     Déconnexion
                   </button>
                 </form>
               </div>
             ) : (
-              <Link href="/login" className="text-white bg-walmart-blue px-6 py-2 rounded-full font-semibold hover:bg-blue-700 transition-colors shadow-sm">
+              <Link href="/login" className="text-white bg-walmart-blue px-4 py-1.5 sm:px-6 sm:py-2 text-sm sm:text-base rounded-full font-semibold hover:bg-blue-700 transition-colors shadow-sm">
                 Connexion
               </Link>
             )}

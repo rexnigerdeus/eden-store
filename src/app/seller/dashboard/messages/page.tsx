@@ -45,17 +45,17 @@ export default async function SellerInboxPage() {
   }
 
   return (
-    <div className="max-w-4xl space-y-6">
+    <div className="max-w-4xl space-y-4 sm:space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Boîte de réception</h1>
-        <p className="text-gray-500 mt-1">Échangez avec vos clients et répondez à leurs questions.</p>
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Boîte de réception</h1>
+        <p className="text-sm sm:text-base text-gray-500 mt-1">Échangez avec vos clients et répondez à leurs questions.</p>
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl sm:rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         {conversations.length === 0 ? (
-          <div className="p-12 text-center text-gray-500">
-            <span className="text-5xl mb-4 block">💬</span>
-            <p>Aucun message pour le moment.</p>
+          <div className="p-6 sm:p-12 text-center text-gray-500">
+            <span className="text-4xl sm:text-5xl mb-3 sm:mb-4 block">💬</span>
+            <p className="text-sm sm:text-base">Aucun message pour le moment.</p>
           </div>
         ) : (
           <div className="divide-y divide-gray-100">
@@ -63,34 +63,34 @@ export default async function SellerInboxPage() {
               <Link 
                 key={conv.id} 
                 href={`/seller/dashboard/messages/${conv.id}`}
-                className="block p-4 hover:bg-gray-50 transition-colors"
+                className="block p-3 sm:p-4 hover:bg-gray-50 transition-colors"
               >
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-3 sm:space-x-4">
                   {/* Avatar Client */}
-                  <div className="w-12 h-12 bg-walmart-light text-walmart-blue rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-walmart-light text-walmart-blue rounded-full flex items-center justify-center font-bold text-base sm:text-lg flex-shrink-0">
                     {conv.profiles?.full_name?.charAt(0).toUpperCase() || 'C'}
                   </div>
                   
                   {/* Aperçu du message */}
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-baseline mb-1">
-                      <h3 className={`text-sm truncate ${conv.unreadCount > 0 ? 'font-bold text-gray-900' : 'font-semibold text-gray-700'}`}>
+                      <h3 className={`text-sm sm:text-base truncate ${conv.unreadCount > 0 ? 'font-bold text-gray-900' : 'font-semibold text-gray-700'}`}>
                         {conv.profiles?.full_name || 'Client Inconnu'}
                       </h3>
-                      <span className="text-xs text-gray-400 whitespace-nowrap ml-2">
+                      <span className="text-[10px] sm:text-xs text-gray-400 whitespace-nowrap ml-2">
                         {conv.lastMessage ? new Date(conv.lastMessage.created_at).toLocaleDateString('fr-FR') : ''}
                       </span>
                     </div>
                     
                     <div className="flex items-center justify-between">
-                      <p className={`text-sm truncate pr-4 ${conv.unreadCount > 0 ? 'font-medium text-gray-900' : 'text-gray-500'}`}>
+                      <p className={`text-xs sm:text-sm truncate pr-2 sm:pr-4 ${conv.unreadCount > 0 ? 'font-medium text-gray-900' : 'text-gray-500'}`}>
                         {conv.lastMessage?.sender_id === user.id ? 'Vous: ' : ''}
                         {conv.lastMessage?.content || 'Nouvelle conversation'}
                       </p>
                       
                       {/* 🔥 LA PASTILLE ROUGE POUR LE VENDEUR 🔥 */}
                       {conv.unreadCount > 0 && (
-                        <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full flex-shrink-0">
+                        <span className="bg-red-500 text-white text-[10px] sm:text-xs font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full flex-shrink-0">
                           {conv.unreadCount}
                         </span>
                       )}

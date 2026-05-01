@@ -3,7 +3,7 @@ import CheckoutClient from './CheckoutClient'
 import { createClient } from '@/utils/supabase/server'
 
 export const metadata = {
-  title: 'Caisse - Asim',
+  title: 'Caisse - EDEN store',
 }
 
 export default async function CheckoutPage() {

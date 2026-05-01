@@ -35,6 +35,7 @@ export default async function SearchPage({
     .from('products')
     .select('*, shops!inner(name, slug)')
     .eq('is_available', true)
+    .eq('shops.subscription_status', 'active')
 
   // 3. On applique les filtres
   if (query) {
@@ -62,38 +63,38 @@ export default async function SearchPage({
     <div className="min-h-screen bg-gray-50">
       <Navbar />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
         
-        <div className="mb-8 border-b border-gray-200 pb-6 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">{pageTitle}</h1>
-            <p className="text-gray-500 mt-2">{products?.length || 0} article(s) trouvé(s)</p>
+        <div className="mb-6 sm:mb-8 border-b border-gray-200 pb-4 sm:pb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0">
+          <div className="w-full sm:w-auto">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{pageTitle}</h1>
+            <p className="text-sm sm:text-base text-gray-500 mt-1 sm:mt-2">{products?.length || 0} article(s) trouvé(s)</p>
           </div>
           
           {/* Bouton pour réinitialiser les filtres si on est dans une catégorie */}
           {(query || categorySlug) && (
-            <Link href="/search" className="text-sm font-medium text-walmart-blue hover:underline bg-blue-50 px-4 py-2 rounded-lg">
+            <Link href="/search" className="w-full sm:w-auto text-center text-sm font-medium text-walmart-blue hover:underline bg-blue-50 px-4 py-2 rounded-lg">
               Voir tout le catalogue
             </Link>
           )}
         </div>
 
         {products && products.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 md:gap-8">
             {products.map((product) => (
-              <Link key={product.id} href={`/product/${product.id}`} className="group flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100">
+              <Link key={product.id} href={`/product/${product.id}`} className="group flex flex-col bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100">
                 <div className="aspect-[4/5] bg-gray-100 relative overflow-hidden">
                   {product.cover_image_url ? (
                     <img src={product.cover_image_url} alt={product.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400"><span className="text-5xl">📷</span></div>
+                    <div className="w-full h-full flex items-center justify-center text-gray-400"><span className="text-4xl sm:text-5xl">📷</span></div>
                   )}
                 </div>
-                <div className="p-4 flex flex-col flex-1">
-                  <h3 className="text-gray-900 font-medium line-clamp-1 group-hover:text-walmart-blue transition-colors">{product.title}</h3>
-                  <p className="text-sm text-gray-500 mt-1 truncate">Vendu par {product.shops?.name}</p>
-                  <div className="mt-auto pt-3">
-                    <span className="text-lg font-bold text-walmart-darkBlue">
+                <div className="p-3 sm:p-4 flex flex-col flex-1">
+                  <h3 className="text-sm sm:text-base text-gray-900 font-medium line-clamp-2 sm:line-clamp-1 leading-tight sm:leading-normal group-hover:text-walmart-blue transition-colors">{product.title}</h3>
+                  <p className="text-[10px] sm:text-xs md:text-sm text-gray-500 mt-1 truncate">Vendu par {product.shops?.name}</p>
+                  <div className="mt-auto pt-2 sm:pt-3">
+                    <span className="text-base sm:text-lg font-bold text-walmart-darkBlue">
                       {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'XOF' }).format(product.price)}
                     </span>
                   </div>
@@ -102,11 +103,11 @@ export default async function SearchPage({
             ))}
           </div>
         ) : (
-          <div className="text-center py-20 bg-white rounded-2xl border border-gray-100">
-            <span className="text-6xl mb-4 block">🔍</span>
-            <h3 className="text-xl font-medium text-gray-900 mb-2">Aucun résultat</h3>
-            <p className="text-gray-500">Il n'y a pas encore de produits dans cette catégorie.</p>
-            <Link href="/" className="inline-block mt-6 px-6 py-2 bg-walmart-blue text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+          <div className="text-center py-12 sm:py-20 px-4 bg-white rounded-xl sm:rounded-2xl border border-gray-100">
+            <span className="text-5xl sm:text-6xl mb-3 sm:mb-4 block">🔍</span>
+            <h3 className="text-lg sm:text-xl font-medium text-gray-900 mb-1 sm:mb-2">Aucun résultat</h3>
+            <p className="text-sm sm:text-base text-gray-500">Il n'y a pas encore de produits dans cette catégorie.</p>
+            <Link href="/" className="inline-block mt-4 sm:mt-6 px-5 sm:px-6 py-2 sm:py-2.5 bg-walmart-blue text-white rounded-lg text-sm sm:text-base font-medium hover:bg-blue-700 transition-colors">
               Retour à l'accueil
             </Link>
           </div>

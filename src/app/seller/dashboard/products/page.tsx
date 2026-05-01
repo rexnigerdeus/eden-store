@@ -27,18 +27,18 @@ export default async function ProductsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       
       {/* En-tête de la page avec le bouton d'ajout */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-walmart-darkBlue">Mes Produits</h1>
-          <p className="text-gray-500 mt-1">Gérez votre catalogue d'articles.</p>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+        <div className="w-full sm:w-auto">
+          <h1 className="text-xl sm:text-2xl font-semibold text-walmart-darkBlue">Mes Produits</h1>
+          <p className="text-sm sm:text-base text-gray-500 mt-1">Gérez votre catalogue d'articles.</p>
         </div>
         
         <Link 
           href="/seller/dashboard/products/new"
-          className="px-4 py-2 bg-walmart-blue text-white rounded-md hover:bg-blue-700 transition-colors shadow-sm font-medium"
+          className="w-full sm:w-auto text-center px-4 py-2 bg-walmart-blue text-white rounded-md hover:bg-blue-700 transition-colors shadow-sm font-medium text-sm sm:text-base"
         >
           + Nouveau produit
         </Link>
@@ -46,25 +46,25 @@ export default async function ProductsPage() {
       
       {/* Affichage Conditionnel : Si aucun produit, on montre l'état vide */}
       {products.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center mt-8">
-          <div className="w-16 h-16 bg-walmart-light text-walmart-blue rounded-full flex items-center justify-center mx-auto mb-4 text-2xl shadow-sm">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 sm:p-12 text-center mt-6 sm:mt-8">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-walmart-light text-walmart-blue rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 text-xl sm:text-2xl shadow-sm">
             📦
           </div>
-          <h3 className="text-lg font-medium text-walmart-darkBlue mb-2">
+          <h3 className="text-base sm:text-lg font-medium text-walmart-darkBlue mb-1 sm:mb-2">
             Aucun produit pour le moment
           </h3>
-          <p className="text-gray-500 max-w-sm mx-auto">
-            Votre catalogue est vide. Ajoutez votre premier produit pour commencer à vendre sur Asim.
+          <p className="text-sm sm:text-base text-gray-500 max-w-sm mx-auto">
+            Votre catalogue est vide. Ajoutez votre premier produit pour commencer à vendre sur EDEN store.
           </p>
         </div>
       ) : (
         /* Si on a des produits, on affiche la grille */
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-6 sm:mt-8">
           {products.map((product) => (
             <div key={product.id} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow">
               
               {/* Affichage de l'image du produit */}
-              <div className="h-48 bg-gray-100 border-b border-gray-100 relative group overflow-hidden">
+              <div className="h-40 sm:h-48 bg-gray-100 border-b border-gray-100 relative group overflow-hidden">
                 {product.cover_image_url ? (
                   /* Note: On utilise une balise <img> standard ici pour la simplicité. 
                      En production, Next.js recommande <Image> mais cela nécessite une config supplémentaire. */
@@ -75,7 +75,7 @@ export default async function ProductsPage() {
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
-                    <span className="text-4xl">📷</span>
+                    <span className="text-3xl sm:text-4xl">📷</span>
                   </div>
                 )}
                 {/* Nos vrais boutons d'action interactifs avec la gestion du stock */}
@@ -83,16 +83,16 @@ export default async function ProductsPage() {
               </div>
 
               {/* Informations du produit */}
-              <div className="p-5 flex-1 flex flex-col">
-                <h3 className="text-lg font-semibold text-walmart-darkBlue truncate" title={product.title}>
+              <div className="p-4 sm:p-5 flex-1 flex flex-col">
+                <h3 className="text-base sm:text-lg font-semibold text-walmart-darkBlue truncate" title={product.title}>
                   {product.title}
                 </h3>
-                <p className="text-gray-500 text-sm mt-1 line-clamp-2 flex-1">
+                <p className="text-gray-500 text-xs sm:text-sm mt-1 line-clamp-2 flex-1">
                   {product.description}
                 </p>
                 
-                <div className="mt-4 flex items-center justify-between">
-                  <span className="text-xl font-bold text-walmart-blue">
+                <div className="mt-3 sm:mt-4 flex items-center justify-between gap-2">
+                  <span className="text-lg sm:text-xl font-bold text-walmart-blue">
                     {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'XOF' }).format(product.price)}
                   </span>
                   

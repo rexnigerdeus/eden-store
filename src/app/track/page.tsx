@@ -65,30 +65,30 @@ export default async function TrackOrderPage({
     <div className="min-h-screen bg-gray-50">
       <Navbar />
 
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
+      <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-6 sm:space-y-8">
         
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-walmart-darkBlue">Suivre ma commande</h1>
-          <p className="text-gray-500 mt-2">Entrez vos informations pour connaître l'état de votre livraison.</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-walmart-darkBlue">Suivre ma commande</h1>
+          <p className="text-sm sm:text-base text-gray-500 mt-2">Entrez vos informations pour connaître l'état de votre livraison.</p>
         </div>
 
         {/* Le formulaire (Méthode GET pour utiliser l'URL) */}
-        <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-          <form method="GET" action="/track" className="space-y-6">
+        <div className="bg-white p-5 sm:p-8 rounded-2xl shadow-sm border border-gray-100">
+          <form method="GET" action="/track" className="space-y-4 sm:space-y-6">
             
             {errorMessage && (
-              <div className="p-4 bg-red-50 text-red-700 text-sm rounded-lg border border-red-100">
+              <div className="p-3 sm:p-4 bg-red-50 text-red-700 text-sm rounded-lg border border-red-100">
                 {errorMessage}
               </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               <div>
                 <label htmlFor="orderId" className="block text-sm font-medium text-gray-700 mb-1">Numéro de commande</label>
                 <input 
                   id="orderId" name="orderId" type="text" required defaultValue={orderId}
                   placeholder="Ex: 123e4567-e89b..." 
-                  className="w-full px-4 py-3 text-gray-900 border border-gray-200 rounded-lg focus:ring-2 focus:ring-walmart-blue outline-none"
+                  className="w-full px-3 py-2.5 sm:px-4 sm:py-3 text-sm sm:text-base text-gray-900 border border-gray-200 rounded-lg focus:ring-2 focus:ring-walmart-blue outline-none"
                 />
               </div>
               <div>
@@ -96,12 +96,12 @@ export default async function TrackOrderPage({
                 <input 
                   id="phone" name="phone" type="tel" required defaultValue={phone}
                   placeholder="Ex: 0102030405" 
-                  className="w-full px-4 py-3 text-gray-900 border border-gray-200 rounded-lg focus:ring-2 focus:ring-walmart-blue outline-none"
+                  className="w-full px-3 py-2.5 sm:px-4 sm:py-3 text-sm sm:text-base text-gray-900 border border-gray-200 rounded-lg focus:ring-2 focus:ring-walmart-blue outline-none"
                 />
               </div>
             </div>
 
-            <button type="submit" className="w-full py-4 bg-walmart-blue hover:bg-blue-700 text-white font-bold rounded-xl transition-colors shadow-sm">
+            <button type="submit" className="w-full py-3 sm:py-4 bg-walmart-blue hover:bg-blue-700 text-white font-bold rounded-xl transition-colors shadow-sm text-base sm:text-lg">
               Rechercher ma commande
             </button>
           </form>
@@ -109,29 +109,29 @@ export default async function TrackOrderPage({
 
         {/* Affichage des résultats de la commande */}
         {order && (
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mt-8">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mt-6 sm:mt-8">
             
             {/* En-tête de la commande */}
-            <div className="p-6 bg-walmart-light border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="p-4 sm:p-6 bg-walmart-light border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
               <div>
-                <p className="text-sm text-gray-500">Commande du {new Date(order.created_at).toLocaleDateString('fr-FR')}</p>
+                <p className="text-xs sm:text-sm text-gray-500">Commande du {new Date(order.created_at).toLocaleDateString('fr-FR')}</p>
                 <p className="font-mono text-xs text-gray-400 mt-1">{order.id}</p>
               </div>
               
               {/* Badge de statut */}
-              <div className={`px-4 py-2 rounded-full font-medium flex items-center space-x-2 w-fit ${statusConfig[order.status]?.color || 'bg-gray-100 text-gray-800'}`}>
+              <div className={`px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded-full font-medium flex items-center gap-1.5 sm:gap-2 w-fit ${statusConfig[order.status]?.color || 'bg-gray-100 text-gray-800'}`}>
                 <span>{statusConfig[order.status]?.icon}</span>
                 <span>{statusConfig[order.status]?.label || order.status}</span>
               </div>
             </div>
 
-            <div className="p-6 md:p-8 space-y-8">
+            <div className="p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8">
               
               {/* Infos livraison & Boutique */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                 <div>
-                  <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-3">Adresse de livraison</h3>
-                  <div className="text-gray-900 space-y-1">
+                  <h3 className="text-xs sm:text-sm font-medium text-gray-400 uppercase tracking-wider mb-2 sm:mb-3">Adresse de livraison</h3>
+                  <div className="text-sm sm:text-base text-gray-900 space-y-1">
                     <p className="font-medium">{order.customer_name}</p>
                     <p>{order.customer_phone}</p>
                     <p>{order.customer_address}</p>
@@ -139,8 +139,8 @@ export default async function TrackOrderPage({
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-3">Boutique partenaire</h3>
-                  <div className="text-gray-900 space-y-1">
+                  <h3 className="text-xs sm:text-sm font-medium text-gray-400 uppercase tracking-wider mb-2 sm:mb-3">Boutique partenaire</h3>
+                  <div className="text-sm sm:text-base text-gray-900 space-y-1">
                     <p className="font-medium">{order.shops?.name}</p>
                     <p className="text-sm text-gray-500">Paiement : À la livraison</p>
                     <Link 
@@ -155,22 +155,22 @@ export default async function TrackOrderPage({
 
               {/* Liste des articles */}
               <div>
-                <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4 border-b border-gray-100 pb-2">Article(s) commandé(s)</h3>
-                <div className="space-y-4">
+                <h3 className="text-xs sm:text-sm font-medium text-gray-400 uppercase tracking-wider mb-3 sm:mb-4 border-b border-gray-100 pb-2">Article(s) commandé(s)</h3>
+                <div className="space-y-3 sm:space-y-4">
                   {order.order_items.map((item: any) => (
-                    <div key={item.id} className="flex items-center space-x-4">
-                      <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                    <div key={item.id} className="flex items-start sm:items-center gap-4">
+                      <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
                         {item.products?.cover_image_url ? (
                           <img src={item.products.cover_image_url} alt="Produit" className="w-full h-full object-cover" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-gray-400">📷</div>
                         )}
                       </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-gray-900">{item.products?.title || 'Produit indisponible'}</p>
-                        <p className="text-sm text-gray-500">Quantité : {item.quantity}</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm sm:text-base text-gray-900 line-clamp-2">{item.products?.title || 'Produit indisponible'}</p>
+                        <p className="text-xs sm:text-sm text-gray-500">Quantité : {item.quantity}</p>
                       </div>
-                      <div className="font-semibold text-walmart-darkBlue">
+                      <div className="font-semibold text-sm sm:text-base text-walmart-darkBlue text-right">
                         {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'XOF' }).format(item.price_at_time)}
                       </div>
                     </div>
@@ -179,9 +179,9 @@ export default async function TrackOrderPage({
               </div>
 
               {/* Total */}
-              <div className="pt-6 border-t border-gray-100 flex justify-between items-center">
-                <span className="text-lg font-medium text-gray-900">Total à payer</span>
-                <span className="text-2xl font-bold text-walmart-blue">
+              <div className="pt-4 sm:pt-6 border-t border-gray-100 flex justify-between items-center">
+                <span className="text-base sm:text-lg font-medium text-gray-900">Total à payer</span>
+                <span className="text-xl sm:text-2xl font-bold text-walmart-blue">
                   {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'XOF' }).format(order.total_amount)}
                 </span>
               </div>

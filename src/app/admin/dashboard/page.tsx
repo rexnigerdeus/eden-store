@@ -79,7 +79,7 @@ export default async function AdminOverviewPage() {
         <div className="bg-gradient-to-br from-walmart-darkBlue to-walmart-blue p-6 rounded-2xl border border-blue-900 shadow-md transform hover:scale-[1.02] transition-transform">
           <div className="flex items-center space-x-3 mb-4">
             <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white text-xl">💎</div>
-            <h3 className="text-blue-100 font-medium text-sm">Revenus Asim / Mois</h3>
+            <h3 className="text-blue-100 font-medium text-sm">Revenus EDEN store / Mois</h3>
           </div>
           <p className="text-3xl font-bold text-white">
             {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'XOF', maximumFractionDigits: 0 }).format(platformMonthlyRevenue)}

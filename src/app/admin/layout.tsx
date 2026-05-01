@@ -21,7 +21,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <aside className="w-full md:w-64 bg-walmart-darkBlue text-white md:min-h-screen p-6 flex flex-col">
         <div className="mb-10">
           <Link href="/admin/dashboard" className="text-2xl font-bold text-walmart-yellow tracking-wider">
-            ASIM ADMIN
+            EDEN store ADMIN
           </Link>
           <p className="text-xs text-blue-200 mt-1">Superviseur Global</p>
         </div>
