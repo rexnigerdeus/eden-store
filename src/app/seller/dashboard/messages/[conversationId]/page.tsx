@@ -50,7 +50,7 @@ export default async function SellerChatPage({
         conversationId={conversation.id} 
         initialMessages={messages || []} 
         currentUserId={user.id} 
-        customerName={conversation.profiles?.full_name || 'Client'}
+        customerName={(conversation.profiles as any)?.full_name || (conversation.profiles as any)?.[0]?.full_name || 'Client'}
       />
     </div>
   )

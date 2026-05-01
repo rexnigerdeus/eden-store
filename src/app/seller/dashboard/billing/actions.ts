@@ -3,7 +3,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 
-export async function notifyPaymentMade() {
+export async function notifyPaymentMade(formData: FormData) {
   const supabase = await createClient()
 
   const { data: { user } } = await supabase.auth.getUser()
@@ -17,10 +17,9 @@ export async function notifyPaymentMade() {
 
   if (error) {
     console.error("Erreur lors de la notification:", error)
-    return { error: "Une erreur est survenue." }
+    return
   }
 
   // On rafraîchit la page de facturation
   revalidatePath('/seller/dashboard/billing')
-  return { success: "Notification envoyée ! Nous activons votre compte dès réception du transfert." }
 }
