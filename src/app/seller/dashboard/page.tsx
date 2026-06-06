@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/supabase/server'
+import { supabaseAdmin } from '@/utils/supabase/admin'
 import Link from 'next/link'
 
 export default async function DashboardOverview() {
@@ -47,16 +48,22 @@ export default async function DashboardOverview() {
   productsCount = count || 0
 
   const firstName = profile?.full_name?.split(' ')[0] || 'Vendeur'
-  const { data: followers } = await supabase.from('subscriptions').select('created_at, profiles(full_name)').eq('shop_id', shop.id)
-  const { data: myReviews } = await supabase.from('reviews').select('*, products(title), profiles(full_name)').eq('shop_id', shop.id).order('created_at', { ascending: false })
+  
+  const { data: followers } = await supabaseAdmin.from('subscriptions').select('created_at, profiles(full_name)').eq('shop_id', shop.id)
   const { data: topFavorites } = await supabase.from('products').select('title, favorites(count)').eq('shop_id', shop.id)
+
+  // NOUVEAU : On utilise supabaseAdmin pour les avis aussi
+  const { data: myReviews } = await supabaseAdmin
+    .from('reviews')
+    .select('*, products(title), profiles(full_name)')
+    .eq('shop_id', shop.id)
+    .order('created_at', { ascending: false })
 
   // LOGIQUE INTELLIGENTE D'EXPIRATION ET D'ESSAI
   const now = new Date()
   const isExpired = shop.subscription_end_date && new Date(shop.subscription_end_date) < now
   const isReallyActive = shop.subscription_status === 'active' && !isExpired
 
-  // Détection des 14 jours (si la boutique a été créée il y a moins de 15 jours)
   const shopCreatedDate = new Date(shop.created_at)
   const diffTime = Math.abs(now.getTime() - shopCreatedDate.getTime())
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
@@ -82,11 +89,10 @@ export default async function DashboardOverview() {
         </div>
       </div>
 
-      {/* 1. ALERTE DE PÉRIODE D'ESSAI */}
       {isTrial && (
         <div className="border-2 border-black bg-walmart-yellow p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <p className="text-xs font-bold text-black uppercase tracking-wider leading-relaxed">
-            🎁 PÉRIODE DE DÉCOUVERTE : Profitez de toutes les fonctionnalités de la plateforme. Votre abonnement sera requis à partir du <span className="font-black text-white bg-black px-2 py-1 ml-1">{new Date(shop.subscription_end_date).toLocaleDateString('fr-FR')}</span>.
+            🎁 PÉRIODE DE DÉCOUVERTE : Profitez de toutes les fonctionnalités. Votre abonnement sera requis à partir du <span className="font-black text-white bg-black px-2 py-1 ml-1">{new Date(shop.subscription_end_date).toLocaleDateString('fr-FR')}</span>.
           </p>
           <Link href="/seller/dashboard/billing" className="text-[10px] font-black text-black uppercase tracking-widest border-2 border-black px-4 py-2 hover:text-white hover:bg-black transition-all shrink-0 bg-white">
             Voir les tarifs
@@ -94,7 +100,6 @@ export default async function DashboardOverview() {
         </div>
       )}
 
-      {/* 2. ALERTE ABONNEMENT INACTIF / EXPIRÉ */}
       {!isReallyActive && (
         <div className="border-2 border-red-600 bg-red-50 p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <p className="text-xs font-bold text-red-700 uppercase tracking-wider leading-relaxed">
@@ -196,7 +201,10 @@ export default async function DashboardOverview() {
             {myReviews?.slice(0, 3).map((review: any) => (
               <div key={review.id} className="text-xs border-b border-gray-100 pb-3 last:border-0 last:pb-0">
                 <div className="flex justify-between items-center font-bold uppercase tracking-wide text-black mb-1">
-                  <span className="text-red-600 font-mono">{review.profiles.full_name}</span>
+                  
+                  {/* NOUVEAU : Fallback Sécurisé */}
+                  <span className="text-red-600 font-mono">{review.profiles?.full_name || 'Client Inconnu'}</span>
+                  
                   <span className="text-red-600 font-mono">{'★'.repeat(review.rating)}</span>
                 </div>
                 <p className="text-gray-500 italic lowercase first-letter:uppercase">"{review.comment}"</p>

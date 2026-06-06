@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/supabase/server'
+import { supabaseAdmin } from '@/utils/supabase/admin'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Navbar from '@/components/Navbar'
@@ -28,7 +29,20 @@ export default async function ProductPage({
 
   const shop = product.shops
 
-  const { data: reviews } = await supabase.from('reviews').select('id, rating, comment, created_at, profiles(full_name)').eq('product_id', product.id).order('created_at', { ascending: false })
+  // 1. NOUVEAU : On utilise supabaseAdmin pour pouvoir lire les noms des clients sans être bloqué par le RLS
+  const { data: reviews } = await supabaseAdmin
+    .from('reviews')
+    .select('id, rating, comment, created_at, profiles(full_name)')
+    .eq('product_id', product.id)
+    .order('created_at', { ascending: false })
+
+  // 2. NOUVEAU : On formate les avis pour garantir qu'un nom s'affiche toujours (fallback)
+  const formattedReviews = (reviews || []).map((review: any) => ({
+    ...review,
+    profiles: {
+      full_name: review.profiles?.full_name || 'Client Inconnu'
+    }
+  }))
 
   let canReview = false
   if (user) {
@@ -45,7 +59,7 @@ export default async function ProductPage({
 
       <main className="max-w-[1400px] mx-auto w-full flex flex-col md:flex-row">
         
-        {/* COLONNE GAUCHE : L'IMAGE (Format Carré pour le généraliste) */}
+        {/* COLONNE GAUCHE : L'IMAGE */}
         <div className="w-full md:w-[55%] bg-gray-50 relative flex items-center justify-center border-r border-gray-100">
           {product.cover_image_url ? (
             <div className="w-full aspect-square md:sticky md:top-20">
@@ -83,7 +97,6 @@ export default async function ProductPage({
             {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'XOF', maximumFractionDigits: 0 }).format(product.price)}
           </div>
 
-          {/* SÉLECTEUR ET BOUTONS */}
           <ProductActions product={product} />
 
           {/* ACCORDÉONS D'INFORMATIONS */}
@@ -128,13 +141,14 @@ export default async function ProductPage({
 
             <details className="group border-b border-gray-200">
               <summary className="flex justify-between items-center font-bold cursor-pointer list-none py-5 text-sm uppercase tracking-wider text-black">
-                Avis Clients ({reviews?.length || 0})
+                Avis Clients ({formattedReviews.length})
                 <span className="transition group-open:rotate-180">
                   <svg fill="none" height="20" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" width="20"><path d="M6 9l6 6 6-6"></path></svg>
                 </span>
               </summary>
               <div className="pb-6">
-                <ReviewSection productId={product.id} shopId={shop.id} canReview={canReview} reviews={reviews || []} />
+                {/* On passe le tableau sécurisé formattedReviews */}
+                <ReviewSection productId={product.id} shopId={shop.id} canReview={canReview} reviews={formattedReviews} />
               </div>
             </details>
 

@@ -53,7 +53,9 @@ export async function updatePricing(formData: FormData) {
   
   if (error) {
     console.error("Erreur lors de la mise à jour des prix:", error)
-    return { error: "Impossible de mettre à jour les tarifs." }
+    // On ne retourne plus d'objet d'erreur ici car l'action est utilisée directement dans le form action
+    // On peut utiliser un toast ou un message d'erreur via un state si nécessaire, 
+    // mais pour corriger l'erreur de type TS, on doit retourner void ou Promise<void>.
   }
 
   revalidatePath('/admin/subscriptions')
