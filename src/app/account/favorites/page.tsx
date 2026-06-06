@@ -101,7 +101,7 @@ export default async function FavoritesPage() {
                       {product.cover_image_url ? (
                         <img src={product.cover_image_url} alt={product.title} className="w-full h-full object-cover grayscale-[10%] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-300 text-2xl font-montserrat font-black uppercase">ASIM</div>
+                        <div className="w-full h-full flex items-center justify-center text-gray-300 text-2xl font-montserrat font-black uppercase">EDEN store</div>
                       )}
                       
                       {/* Badge Épuisé */}

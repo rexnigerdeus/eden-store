@@ -1,5 +1,8 @@
 import { createClient } from '@/utils/supabase/server'
+import { supabaseAdmin } from '@/utils/supabase/admin'
+import { redirect } from 'next/navigation'
 import OrderStatusDropdown from './OrderStatusDropdown'
+import Link from 'next/link'
 
 export default async function OrdersPage() {
   const supabase = await createClient()
@@ -32,6 +35,40 @@ export default async function OrdersPage() {
       .order('created_at', { ascending: false })
       
     if (data) orders = data
+  }
+
+  // --- ACTION SERVEUR : DÉMARRER OU REJOINDRE LA DISCUSSION ---
+  async function startConversation(formData: FormData) {
+    'use server'
+    const shopId = formData.get('shopId') as string
+    const customerId = formData.get('customerId') as string
+
+    if (!shopId || !customerId) return
+
+    // On vérifie d'abord si une conversation existe déjà
+    let { data: existing } = await supabaseAdmin
+      .from('conversations')
+      .select('id')
+      .eq('shop_id', shopId)
+      .eq('customer_id', customerId)
+      .single()
+
+    let convId = existing?.id
+
+    // Si elle n'existe pas, on la crée
+    if (!convId) {
+      const { data } = await supabaseAdmin
+        .from('conversations')
+        .insert({ shop_id: shopId, customer_id: customerId })
+        .select('id')
+        .single()
+      convId = data?.id
+    }
+
+    // On redirige vers la messagerie interne de l'espace vendeur
+    if (convId) {
+      redirect(`/seller/dashboard/messages/${convId}`)
+    }
   }
 
   return (
@@ -84,14 +121,17 @@ export default async function OrdersPage() {
                     <p className="text-gray-600 text-xs">VIL: <span className="text-black">{order.customer_city}</span></p>
                   </div>
                   
-                  {/* Bouton WhatsApp */}
-                  <a 
-                    href={`https://wa.me/${order.customer_phone.replace(/[^0-9]/g, '')}?text=Bonjour ${order.customer_name}, je suis le vendeur de la boutique EDEN store. Je vous contacte concernant votre commande.`}
-                    target="_blank" rel="noopener noreferrer"
-                    className="inline-block mt-8 border-2 border-black px-4 py-3 text-xs font-bold uppercase tracking-widest text-black hover:bg-black hover:text-white transition-colors"
-                  >
-                    Contacter via WhatsApp
-                  </a>
+                  {/* NOUVEAU : BOUTON DE MESSAGERIE INTERNE */}
+                  <form action={startConversation} className="mt-8">
+                    <input type="hidden" name="shopId" value={shop?.id} />
+                    <input type="hidden" name="customerId" value={order.customer_id} />
+                    <button 
+                      type="submit" 
+                      className="w-full md:w-auto inline-block text-center border-2 border-black px-6 py-3 text-[10px] font-black uppercase tracking-widest text-black hover:bg-black hover:text-white transition-colors"
+                    >
+                      Message Interne (Client)
+                    </button>
+                  </form>
                 </div>
 
                 {/* Colonne droite : Liste des articles */}
@@ -106,7 +146,7 @@ export default async function OrdersPage() {
                           {item.products?.cover_image_url ? (
                             <img src={item.products.cover_image_url} alt="Produit" className="w-full h-full object-cover" />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-[10px] font-montserrat font-bold uppercase text-gray-400">ASIM</div>
+                            <div className="w-full h-full flex items-center justify-center text-[10px] font-montserrat font-bold uppercase text-gray-400">EDEN store</div>
                           )}
                         </div>
                         <div className="flex-1 min-w-0 pt-1">

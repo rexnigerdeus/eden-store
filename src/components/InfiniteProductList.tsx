@@ -64,7 +64,7 @@ export default function InfiniteProductList({ initialProducts }: { initialProduc
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-gray-300 text-3xl">ASIM</div>
+                <div className="w-full h-full flex items-center justify-center text-gray-300 text-3xl">EDEN store</div>
               )}
               
               {/* Badge optionnel "Nouveau" ou "Vendeur" */}

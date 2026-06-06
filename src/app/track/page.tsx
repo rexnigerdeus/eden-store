@@ -159,7 +159,7 @@ export default async function TrackOrderPage({
                         {item.products?.cover_image_url ? (
                           <img src={item.products.cover_image_url} alt="Produit" className="w-full h-full object-cover" />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-[10px] font-montserrat font-black text-gray-400 uppercase">ASIM</div>
+                          <div className="w-full h-full flex items-center justify-center text-[10px] font-montserrat font-black text-gray-400 uppercase">EDEN store</div>
                         )}
                       </div>
                       <div className="flex-1 min-w-0 pt-1">

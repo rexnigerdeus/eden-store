@@ -60,7 +60,7 @@ export default async function ProductsPage() {
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-xl font-montserrat font-black uppercase text-gray-300">
-                    ASIM
+                    EDEN store
                   </div>
                 )}
                 

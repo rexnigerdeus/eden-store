@@ -171,7 +171,7 @@ export default async function ShopPage({
                       {product.cover_image_url ? (
                         <img src={product.cover_image_url} alt={product.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-300 text-2xl font-montserrat font-black uppercase">ASIM</div>
+                        <div className="w-full h-full flex items-center justify-center text-gray-300 text-2xl font-montserrat font-black uppercase">EDEN store</div>
                       )}
                     </div>
                     

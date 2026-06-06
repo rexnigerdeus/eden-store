@@ -141,7 +141,7 @@ export default async function AccountPage() {
                               {item.products?.cover_image_url ? (
                                 <img src={item.products.cover_image_url} alt="Produit" className="w-full h-full object-cover" />
                               ) : (
-                                <div className="w-full h-full flex items-center justify-center text-[10px] font-montserrat font-bold text-gray-400 uppercase">ASIM</div>
+                                <div className="w-full h-full flex items-center justify-center text-[10px] font-montserrat font-bold text-gray-400 uppercase">EDEN store</div>
                               )}
                             </div>
                             <div className="pt-1">

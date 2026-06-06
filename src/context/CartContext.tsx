@@ -32,7 +32,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   // 1. Au chargement du site, on récupère le panier sauvegardé dans le navigateur
   useEffect(() => {
-    const savedCart = localStorage.getItem('asim_cart')
+    const savedCart = localStorage.getItem('eden_store_cart')
     if (savedCart) {
       try {
         setCart(JSON.parse(savedCart))
@@ -46,7 +46,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   // 2. À chaque modification du panier, on sauvegarde dans le navigateur
   useEffect(() => {
     if (isLoaded) {
-      localStorage.setItem('asim_cart', JSON.stringify(cart))
+      localStorage.setItem('eden_store_cart', JSON.stringify(cart))
     }
   }, [cart, isLoaded])
 

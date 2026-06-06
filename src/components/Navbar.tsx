@@ -5,6 +5,7 @@ import { useCart } from '@/context/CartContext'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import LiveOnlineCounter from './LiveOnlineCounter'
+import { useClientBadges } from '@/hooks/useBadges' // <-- Import du Hook
 
 export default function Navbar() {
   const { cart } = useCart()
@@ -18,152 +19,110 @@ export default function Navbar() {
   }, [cart])
 
   useEffect(() => {
-    // 1. Lire la session actuelle depuis le cache local (pas de vol de lock réseau)
     const fetchSession = async () => {
       const { data: { session } } = await supabase.auth.getSession()
       setUser(session?.user || null)
     }
     fetchSession()
 
-    // 2. Écouter les changements de connexion/déconnexion
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user || null)
     })
 
-    return () => {
-      subscription.unsubscribe()
-    }
+    return () => { subscription.unsubscribe() }
   }, [supabase])
 
+  // Notifications des messages non lus du client
+  const { unreadMessages } = useClientBadges(user?.id || null)
+
   return (
-    <header className="w-full sticky top-0 z-50 bg-white shadow-sm">
+    <header className="w-full sticky top-0 z-50 bg-white shadow-sm border-b-2 border-black">
       
-      {/* 1. BARRE D'ANNONCE — Compteur de connectés en temps réel */}
       <LiveOnlineCounter />
 
-      {/* 2. NAVIGATION PRINCIPALE */}
-      <div className="border-b border-gray-200">
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-20">
           
-          {/* GAUCHE : Menu Mobile Hamburger & Liens Desktop */}
-          <div className="flex items-center gap-6">
+          {/* Menu Hamburger */}
+          <div className="flex items-center sm:hidden">
             <button
-              type="button"
-              aria-label="Ouvrir le menu"
-              aria-expanded={mobileMenuOpen}
-              onClick={() => setMobileMenuOpen((open) => !open)}
-              className="md:hidden text-black p-2 -ml-2"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="text-black hover:text-red-600 focus:outline-none"
             >
-              {mobileMenuOpen ? (
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-              ) : (
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
-              )}
+              <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                {mobileMenuOpen ? (
+                  <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
             </button>
-            
-            {/* Liens de navigation (Style E-commerce Fashion) */}
-            <nav className="hidden md:flex items-center gap-6 font-montserrat font-bold text-sm tracking-wide">
-              <Link href="/" className="text-black hover:text-red-600 transition-colors uppercase">Nouveautés</Link>
-              <Link href="/category/vetements" className="text-black hover:text-red-600 transition-colors uppercase">Vêtements</Link>
-              <Link href="/category/accessoires" className="text-black hover:text-red-600 transition-colors uppercase">Accessoires</Link>
-              <Link href="/shops" className="text-gray-500 hover:text-black transition-colors uppercase">Boutiques</Link>
-            </nav>
+          </div>
 
-            {/* CTA Vendeur (Desktop) */}
-            <Link
-              href="/seller/signup"
-              className="hidden md:inline-flex items-center gap-2 px-4 py-2 border-2 border-black bg-white text-black text-[11px] font-montserrat font-black uppercase tracking-widest hover:bg-black hover:text-white transition-colors rounded-none"
-            >
-              <span aria-hidden="true">＋</span>
-              Créer un compte vendeur
+          {/* Liens Desktop Gauche */}
+          <nav className="hidden sm:flex space-x-8">
+            <Link href="/category/vetements" className="text-sm font-bold text-black uppercase tracking-widest hover:text-red-600 transition-colors">Vêtements</Link>
+            <Link href="/category/accessoires" className="text-sm font-bold text-black uppercase tracking-widest hover:text-red-600 transition-colors">Accessoires</Link>
+            <Link href="/shops" className="text-sm font-bold text-gray-500 uppercase tracking-widest hover:text-black transition-colors">Marques</Link>
+          </nav>
+
+          {/* Logo Central */}
+          <div className="flex justify-center flex-1 sm:flex-none">
+            <Link href="/" className="text-4xl font-montserrat font-black text-black tracking-tighter uppercase">
+              EDEN store<span className="text-red-600">.</span>
             </Link>
           </div>
 
-          {/* CENTRE : LOGO (Imposant et centré sur desktop) */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 md:static md:transform-none">
-            <Link href="/" className="font-montserrat font-black text-3xl tracking-tighter text-black">
-              ASIM<span className="text-red-600">.</span>
+          {/* Icônes Desktop Droite */}
+          <div className="flex items-center space-x-6">
+            <Link href="/search" className="text-black hover:text-red-600 transition-colors hidden sm:block">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="square" strokeLinejoin="miter" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
             </Link>
-          </div>
-
-          {/* DROITE : Icônes d'action (Recherche, Compte, Favoris, Panier) */}
-          <div className="flex items-center gap-4 sm:gap-6">
             
-            {/* Icône Recherche */}
-            <Link href="/search" className="text-black hover:text-gray-600">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            {/* Icône de Compte + BADGE MESSAGES */}
+            <Link href={user ? '/account' : '/login'} className="text-black hover:text-red-600 transition-colors hidden sm:block relative">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="square" strokeLinejoin="miter" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+              {unreadMessages > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[9px] font-black px-1.5 py-0.5 border border-red-600 animate-pulse">
+                  {unreadMessages}
+                </span>
+              )}
             </Link>
 
-            {/* Icône Compte (Desktop uniquement) */}
-            <Link href={user ? "/account" : "/login"} className="hidden sm:block text-black hover:text-gray-600">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+            <Link href="/account/favorites" className="text-black hover:text-red-600 transition-colors hidden sm:block">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="square" strokeLinejoin="miter" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
             </Link>
-
-            {/* Icône Favoris ❤️ */}
-            <Link href="/account/favorites" className="text-black hover:text-red-500 transition-colors">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
-            </Link>
-
-            {/* Icône Panier avec Badge au style minimaliste */}
-            <Link href="/cart" className="relative text-black hover:text-gray-600 flex items-center">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+            
+            <Link href="/cart" className="text-black hover:text-red-600 transition-colors relative flex items-center">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="square" strokeLinejoin="miter" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
               {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-black text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                <span className="absolute -top-2 -right-2 bg-black text-white text-[9px] font-black px-1.5 py-0.5 border border-black">
                   {cartCount}
                 </span>
               )}
             </Link>
-            
           </div>
         </div>
 
-        {/* Menu Mobile déroulant */}
+        {/* Menu Mobile */}
         {mobileMenuOpen && (
-          <nav className="md:hidden border-t border-gray-200 bg-white">
-            <div className="max-w-[1600px] mx-auto px-6 py-4 flex flex-col gap-4 font-montserrat font-bold text-sm tracking-wide">
-              <Link
-                href="/"
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-black hover:text-red-600 transition-colors uppercase"
-              >
-                Nouveautés
-              </Link>
-              <Link
-                href="/category/vetements"
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-black hover:text-red-600 transition-colors uppercase"
-              >
-                Vêtements
-              </Link>
-              <Link
-                href="/category/accessoires"
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-black hover:text-red-600 transition-colors uppercase"
-              >
-                Accessoires
-              </Link>
-              <Link
-                href="/shops"
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-gray-500 hover:text-black transition-colors uppercase"
-              >
-                Boutiques
-              </Link>
-              <Link
-                href={user ? '/account' : '/login'}
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-black hover:text-gray-600 transition-colors uppercase sm:hidden"
-              >
-                {user ? 'Mon compte' : 'Se connecter'}
+          <nav className="sm:hidden border-t-2 border-black bg-white pb-6 pt-4">
+            <div className="flex flex-col space-y-4">
+              <Link href="/category/vetements" onClick={() => setMobileMenuOpen(false)} className="text-sm font-bold text-black uppercase tracking-widest hover:text-red-600 transition-colors">Vêtements</Link>
+              <Link href="/category/accessoires" onClick={() => setMobileMenuOpen(false)} className="text-sm font-bold text-black uppercase tracking-widest hover:text-red-600 transition-colors">Accessoires</Link>
+              <Link href="/shops" onClick={() => setMobileMenuOpen(false)} className="text-sm font-bold text-gray-500 uppercase tracking-widest hover:text-black transition-colors">Marques</Link>
+              
+              <Link href={user ? '/account' : '/login'} onClick={() => setMobileMenuOpen(false)} className="text-sm font-bold text-black uppercase tracking-widest hover:text-red-600 transition-colors flex justify-between items-center">
+                <span>{user ? 'Mon compte' : 'Se connecter'}</span>
+                {unreadMessages > 0 && (
+                  <span className="bg-red-600 text-white text-[10px] font-black px-2 py-0.5 border border-red-600 animate-pulse">
+                    {unreadMessages}
+                  </span>
+                )}
               </Link>
 
-              {/* CTA Vendeur (Mobile) — bouton plein, bien visible */}
-              <Link
-                href="/seller/signup"
-                onClick={() => setMobileMenuOpen(false)}
-                className="mt-2 flex items-center justify-center gap-2 px-4 py-3 border-2 border-black bg-black text-white text-xs font-montserrat font-black uppercase tracking-widest hover:bg-gray-900 transition-colors rounded-none"
-              >
-                <span aria-hidden="true">＋</span>
+              {/* Bouton Vendeur Mobile */}
+              <Link href="/seller/signup" onClick={() => setMobileMenuOpen(false)} className="mt-4 flex items-center justify-center px-4 py-4 border-2 border-black bg-black text-white text-xs font-montserrat font-black uppercase tracking-widest hover:bg-gray-900 transition-colors">
                 Créer un compte vendeur
               </Link>
             </div>

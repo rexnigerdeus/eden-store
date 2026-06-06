@@ -80,7 +80,7 @@ export default async function CategoryPage({
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-gray-300 text-2xl font-montserrat font-black uppercase">
-                        ASIM
+                        EDEN store
                       </div>
                     )}
                   </div>

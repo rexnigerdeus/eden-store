@@ -32,7 +32,7 @@ export default function SellerLayoutUI({ children, shopName, shopInitial }: Sell
         {/* Logo de la marque */}
         <div className="p-6 flex items-center justify-between border-b border-white/10">
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-montserrat font-black text-white tracking-tighter">ASIM.</span>
+            <span className="text-2xl font-montserrat font-black text-white tracking-tighter">EDEN store.</span>
             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Studio</span>
           </div>
           <button 

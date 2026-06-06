@@ -81,7 +81,7 @@ export default function CartClient() {
                     {item.cover_image_url ? (
                       <img src={item.cover_image_url} alt={item.title} className="w-full h-full object-cover" />
                     ) : (
-                      <span className="w-full h-full flex items-center justify-center text-xs font-montserrat font-bold text-gray-400 uppercase">ASIM</span>
+                      <span className="w-full h-full flex items-center justify-center text-xs font-montserrat font-bold text-gray-400 uppercase">EDEN store</span>
                     )}
                   </div>
 

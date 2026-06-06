@@ -196,7 +196,7 @@ export default async function DashboardOverview() {
             {myReviews?.slice(0, 3).map((review: any) => (
               <div key={review.id} className="text-xs border-b border-gray-100 pb-3 last:border-0 last:pb-0">
                 <div className="flex justify-between items-center font-bold uppercase tracking-wide text-black mb-1">
-                  <span>{review.profiles.full_name}</span>
+                  <span className="text-red-600 font-mono">{review.profiles.full_name}</span>
                   <span className="text-red-600 font-mono">{'★'.repeat(review.rating)}</span>
                 </div>
                 <p className="text-gray-500 italic lowercase first-letter:uppercase">"{review.comment}"</p>
