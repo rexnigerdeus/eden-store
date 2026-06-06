@@ -52,14 +52,44 @@ export default async function DashboardOverview() {
   const { data: followers } = await supabaseAdmin.from('subscriptions').select('created_at, profiles(full_name)').eq('shop_id', shop.id)
   const { data: topFavorites } = await supabase.from('products').select('title, favorites(count)').eq('shop_id', shop.id)
 
-  // NOUVEAU : On utilise supabaseAdmin pour les avis aussi
+  // 1. Récupération des avis avec user_id
   const { data: myReviews } = await supabaseAdmin
     .from('reviews')
-    .select('*, products(title), profiles(full_name)')
+    .select('*, products(title), user_id, profiles(full_name)')
     .eq('shop_id', shop.id)
     .order('created_at', { ascending: false })
 
-  // LOGIQUE INTELLIGENTE D'EXPIRATION ET D'ESSAI
+  // 2. RECHERCHE MULTI-COUCHES DU NOM POUR CHAQUE AVIS DU VENDEUR
+  const formattedMyReviews = await Promise.all((myReviews || []).map(async (review: any) => {
+    let clientName = review.profiles?.full_name
+
+    if (!clientName && review.user_id) {
+      const { data: authData } = await supabaseAdmin.auth.admin.getUserById(review.user_id)
+      if (authData?.user?.user_metadata?.full_name) {
+        clientName = authData.user.user_metadata.full_name
+      }
+    }
+
+    if (!clientName && review.user_id) {
+      const { data: orderData } = await supabaseAdmin.from('orders')
+        .select('customer_name')
+        .eq('customer_id', review.user_id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+      if (orderData?.customer_name) {
+        clientName = orderData.customer_name
+      }
+    }
+
+    return {
+      ...review,
+      profiles: {
+        full_name: clientName || 'Client Inconnu'
+      }
+    }
+  }))
+
   const now = new Date()
   const isExpired = shop.subscription_end_date && new Date(shop.subscription_end_date) < now
   const isReallyActive = shop.subscription_status === 'active' && !isExpired
@@ -198,13 +228,10 @@ export default async function DashboardOverview() {
         <div className="border-2 border-black p-6 bg-white">
           <h3 className="text-[10px] font-montserrat font-black text-gray-400 uppercase tracking-widest mb-6 border-b-2 border-black pb-3">⭐ Avis clients</h3>
           <div className="space-y-4">
-            {myReviews?.slice(0, 3).map((review: any) => (
+            {formattedMyReviews.slice(0, 3).map((review: any) => (
               <div key={review.id} className="text-xs border-b border-gray-100 pb-3 last:border-0 last:pb-0">
                 <div className="flex justify-between items-center font-bold uppercase tracking-wide text-black mb-1">
-                  
-                  {/* NOUVEAU : Fallback Sécurisé */}
-                  <span className="text-red-600 font-mono">{review.profiles?.full_name || 'Client Inconnu'}</span>
-                  
+                  <span className="text-red-600 font-mono">{review.profiles.full_name}</span>
                   <span className="text-red-600 font-mono">{'★'.repeat(review.rating)}</span>
                 </div>
                 <p className="text-gray-500 italic lowercase first-letter:uppercase">"{review.comment}"</p>

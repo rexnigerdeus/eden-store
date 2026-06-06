@@ -29,18 +29,43 @@ export default async function ProductPage({
 
   const shop = product.shops
 
-  // 1. NOUVEAU : On utilise supabaseAdmin pour pouvoir lire les noms des clients sans être bloqué par le RLS
+  // 1. Récupération des avis avec le user_id inclus
   const { data: reviews } = await supabaseAdmin
     .from('reviews')
-    .select('id, rating, comment, created_at, profiles(full_name)')
+    .select('id, rating, comment, created_at, user_id, profiles(full_name)')
     .eq('product_id', product.id)
     .order('created_at', { ascending: false })
 
-  // 2. NOUVEAU : On formate les avis pour garantir qu'un nom s'affiche toujours (fallback)
-  const formattedReviews = (reviews || []).map((review: any) => ({
-    ...review,
-    profiles: {
-      full_name: review.profiles?.full_name || 'Client Inconnu'
+  // 2. RECHERCHE MULTI-COUCHES DU NOM POUR CHAQUE AVIS
+  const formattedReviews = await Promise.all((reviews || []).map(async (review: any) => {
+    let clientName = review.profiles?.full_name
+
+    // Couche 2 : Métadonnées Auth
+    if (!clientName && review.user_id) {
+      const { data: authData } = await supabaseAdmin.auth.admin.getUserById(review.user_id)
+      if (authData?.user?.user_metadata?.full_name) {
+        clientName = authData.user.user_metadata.full_name
+      }
+    }
+
+    // Couche 3 : Historique des commandes
+    if (!clientName && review.user_id) {
+      const { data: orderData } = await supabaseAdmin.from('orders')
+        .select('customer_name')
+        .eq('customer_id', review.user_id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+      if (orderData?.customer_name) {
+        clientName = orderData.customer_name
+      }
+    }
+
+    return {
+      ...review,
+      profiles: {
+        full_name: clientName || 'Client Inconnu'
+      }
     }
   }))
 
@@ -147,7 +172,6 @@ export default async function ProductPage({
                 </span>
               </summary>
               <div className="pb-6">
-                {/* On passe le tableau sécurisé formattedReviews */}
                 <ReviewSection productId={product.id} shopId={shop.id} canReview={canReview} reviews={formattedReviews} />
               </div>
             </details>
