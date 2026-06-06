@@ -60,5 +60,4 @@ export async function updatePricing(formData: FormData) {
 
   revalidatePath('/admin/subscriptions')
   revalidatePath('/seller/dashboard/billing')
-  return { success: true }
 }
