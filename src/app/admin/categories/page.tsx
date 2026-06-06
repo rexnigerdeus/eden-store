@@ -39,67 +39,75 @@ export default async function AdminCategoriesPage() {
     revalidatePath('/admin/categories')
   }
 
+  // --- CLASSES CSS RÉUTILISABLES ---
+  const inputClasses = "w-full p-4 text-sm font-bold text-black border-2 border-gray-300 outline-none focus:border-black bg-white placeholder-gray-400 transition-colors rounded-none uppercase tracking-widest"
+  const labelClasses = "block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2"
+
   return (
-    <div className="max-w-4xl space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Gestion des Catégories</h1>
-        <p className="text-gray-500 mt-2">Créez les rubriques dans lesquelles les vendeurs pourront classer leurs articles.</p>
+    <div className="max-w-[1400px] mx-auto space-y-10">
+      
+      {/* EN-TÊTE */}
+      <div className="border-b border-gray-200 pb-6">
+        <h1 className="text-3xl md:text-5xl font-montserrat font-black text-black uppercase tracking-tight">Catégories</h1>
+        <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mt-3">Créez les rubriques de classification du catalogue.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* Colonne de gauche : Formulaire d'ajout */}
-        <div className="md:col-span-1">
-          <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Nouvelle catégorie</h2>
+        {/* COLONNE DE GAUCHE : FORMULAIRE D'AJOUT */}
+        <div className="lg:col-span-1">
+          <div className="bg-gray-50 border-2 border-black p-6 md:p-8">
+            <h2 className="text-sm font-montserrat font-black text-black uppercase tracking-widest mb-6">Nouvelle catégorie</h2>
             
-            <form action={createCategory} className="space-y-4">
+            <form action={createCategory} className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nom (ex: Électronique)</label>
-                <input type="text" name="name" required className="w-full px-4 py-2 text-gray-900 border border-gray-200 rounded-lg focus:ring-2 focus:ring-walmart-blue outline-none" />
+                <label className={labelClasses}>Nom de la rubrique *</label>
+                <input type="text" name="name" required placeholder="EX: VÊTEMENTS" className={inputClasses} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Icône (Emoji)</label>
-                <input type="text" name="icon" placeholder="📱" maxLength={2} className="w-full px-4 py-2 text-gray-900 border border-gray-200 rounded-lg focus:ring-2 focus:ring-walmart-blue outline-none text-2xl" />
+                <label className={labelClasses}>Icône (Emoji) *</label>
+                <input type="text" name="icon" required placeholder="👕" maxLength={2} className={`${inputClasses} text-2xl text-center`} />
               </div>
-              <button type="submit" className="w-full py-2 bg-walmart-darkBlue text-white font-medium rounded-lg hover:bg-blue-900 transition-colors">
-                Ajouter
+              <button type="submit" className="w-full py-4 bg-black text-white font-montserrat font-black uppercase tracking-widest text-sm hover:bg-gray-900 transition-colors border-2 border-black mt-4">
+                Ajouter au registre
               </button>
             </form>
           </div>
         </div>
 
-        {/* Colonne de droite : Liste des catégories */}
-        <div className="md:col-span-2">
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-            <div className="p-4 border-b border-gray-100 bg-gray-50">
-              <h2 className="text-sm font-semibold text-gray-600 uppercase tracking-wider">Catégories actives ({categories?.length || 0})</h2>
+        {/* COLONNE DE DROITE : LISTE DES CATÉGORIES */}
+        <div className="lg:col-span-2">
+          <div className="bg-white border-2 border-black flex flex-col h-full overflow-hidden">
+            <div className="p-6 border-b-2 border-black bg-black text-white">
+              <h2 className="text-sm font-montserrat font-black uppercase tracking-widest">Catégories actives ({categories?.length || 0})</h2>
             </div>
             
             {categories && categories.length > 0 ? (
-              <ul className="divide-y divide-gray-100">
+              <ul className="divide-y-2 divide-gray-100 flex-1 bg-white">
                 {categories.map((cat) => (
-                  <li key={cat.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
-                    <div className="flex items-center space-x-4">
-                      <span className="text-3xl bg-walmart-light p-2 rounded-lg">{cat.icon || '📁'}</span>
+                  <li key={cat.id} className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center space-x-6">
+                      <div className="w-14 h-14 bg-gray-100 border-2 border-black flex items-center justify-center text-3xl shrink-0">
+                        {cat.icon || '📁'}
+                      </div>
                       <div>
-                        <p className="font-semibold text-gray-900">{cat.name}</p>
-                        <p className="text-xs text-gray-400 font-mono">/{cat.slug}</p>
+                        <p className="font-montserrat font-black text-black text-lg uppercase tracking-wider">{cat.name}</p>
+                        <p className="text-[10px] font-mono font-bold text-gray-400 uppercase tracking-widest mt-1">/{cat.slug}</p>
                       </div>
                     </div>
                     
                     <form action={deleteCategory}>
                       <input type="hidden" name="id" value={cat.id} />
-                      <button type="submit" className="text-red-500 hover:bg-red-50 p-2 rounded-full transition-colors" title="Supprimer">
-                        🗑️
+                      <button type="submit" className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-red-600 border-2 border-red-600 bg-red-50 hover:bg-red-600 hover:text-white transition-colors" title="Supprimer la catégorie">
+                        Supprimer
                       </button>
                     </form>
                   </li>
                 ))}
               </ul>
             ) : (
-              <div className="p-8 text-center text-gray-500">
-                Aucune catégorie n'a encore été créée.
+              <div className="p-12 text-center text-gray-400 text-xs font-bold uppercase tracking-widest flex-1 flex items-center justify-center bg-gray-50">
+                Le registre des catégories est actuellement vide.
               </div>
             )}
           </div>

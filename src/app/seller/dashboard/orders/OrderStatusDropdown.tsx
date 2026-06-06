@@ -25,28 +25,30 @@ export default function OrderStatusDropdown({ orderId, initialStatus }: { orderI
     setIsUpdating(false)
   }
 
+  // Couleurs brutalistes selon le statut
+  let bgColor = 'bg-white text-black border-black'
+  if (status === 'processing') bgColor = 'bg-gray-200 text-black border-gray-400'
+  if (status === 'shipped') bgColor = 'bg-black text-white border-black'
+  if (status === 'delivered') bgColor = 'bg-green-600 text-white border-green-600'
+  if (status === 'cancelled') bgColor = 'bg-red-600 text-white border-red-600'
+
   return (
     <div className="relative">
       <select
         value={status}
         onChange={handleChange}
         disabled={isUpdating}
-        className={`appearance-none font-medium text-sm rounded-full px-4 py-2 pr-8 outline-none border border-transparent focus:ring-2 focus:ring-walmart-blue transition-colors cursor-pointer ${
-          status === 'pending' ? 'bg-orange-100 text-orange-800' :
-          status === 'processing' ? 'bg-blue-100 text-blue-800' :
-          status === 'shipped' ? 'bg-purple-100 text-purple-800' :
-          status === 'delivered' ? 'bg-green-100 text-green-800' :
-          'bg-red-100 text-red-800'
-        } ${isUpdating ? 'opacity-50 cursor-wait' : ''}`}
+        className={`appearance-none font-bold text-xs uppercase tracking-widest rounded-none px-4 py-3 pr-10 outline-none border-2 focus:ring-0 cursor-pointer transition-colors ${bgColor} ${isUpdating ? 'opacity-50 cursor-wait' : ''}`}
       >
         {statuses.map((s) => (
-          <option key={s.value} value={s.value}>{s.label}</option>
+          <option key={s.value} value={s.value} className="bg-white text-black font-bold uppercase">{s.label}</option>
         ))}
       </select>
-      {/* Petite flèche personnalisée pour le select */}
-      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
-        <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-          <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+      
+      {/* Flèche du dropdown adaptée à la couleur de fond */}
+      <div className={`pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 ${status === 'shipped' || status === 'delivered' || status === 'cancelled' ? 'text-white' : 'text-black'}`}>
+        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
         </svg>
       </div>
     </div>

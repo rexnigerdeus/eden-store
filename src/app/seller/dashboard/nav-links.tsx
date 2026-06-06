@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-// On ajoute une prop optionnelle pour fermer le menu sur mobile
 export default function NavLinks({ onLinkClick }: { onLinkClick?: () => void }) {
   const pathname = usePathname()
 
@@ -18,7 +17,7 @@ export default function NavLinks({ onLinkClick }: { onLinkClick?: () => void }) 
   ]
 
   return (
-    <nav className="flex-1 px-4 space-y-2 mt-4">
+    <nav className="flex-1 px-4 space-y-1.5 mt-6">
       {links.map((link) => {
         const isActive = 
           pathname === link.href || 
@@ -28,11 +27,11 @@ export default function NavLinks({ onLinkClick }: { onLinkClick?: () => void }) 
           <Link
             key={link.name}
             href={link.href}
-            onClick={onLinkClick} // <-- Ajout de l'événement ici
-            className={`block px-4 py-2 rounded-md font-medium transition-colors ${
+            onClick={onLinkClick}
+            className={`block px-4 py-3 font-montserrat font-bold text-xs uppercase tracking-widest transition-colors rounded-none ${
               isActive
-                ? 'bg-walmart-blue text-white shadow-sm' 
-                : 'text-gray-300 hover:bg-white/10 hover:text-white' 
+                ? 'bg-white text-black font-black' // Lien actif : fond blanc, écriture noire
+                : 'text-gray-400 hover:bg-white/5 hover:text-white' // Lien inactif
             }`}
           >
             {link.name}

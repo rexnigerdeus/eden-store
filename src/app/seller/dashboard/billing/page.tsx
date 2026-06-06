@@ -17,40 +17,40 @@ export default async function BillingPage() {
   const monthlyPrice = isPartner ? "5 000 FCFA" : "10 000 FCFA"
   const annualPrice = isPartner ? "60 000 FCFA" : "100 000 FCFA"
   
-  // Statuts traduits
+  // Statuts traduits (Style Brutaliste)
   const statusLabels: Record<string, { text: string, color: string }> = {
-    unpaid: { text: "Paiement requis", color: "bg-red-100 text-red-800" },
-    pending_verification: { text: "Vérification en cours", color: "bg-orange-100 text-orange-800" },
-    active: { text: "Actif", color: "bg-green-100 text-green-800" },
-    expired: { text: "Expiré", color: "bg-red-100 text-red-800" }
+    unpaid: { text: "Paiement requis", color: "bg-red-50 text-red-600 border-red-600" },
+    pending_verification: { text: "Vérification en cours", color: "bg-gray-100 text-black border-black" },
+    active: { text: "Actif", color: "bg-green-50 text-green-600 border-green-600" },
+    expired: { text: "Expiré", color: "bg-red-50 text-red-600 border-red-600" }
   }
 
   const currentStatus = statusLabels[shop?.subscription_status || 'unpaid']
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
+    <div className="max-w-[1000px] mx-auto space-y-8">
       
       {/* En-tête */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0">
-        <div className="w-full sm:w-auto">
-          <h1 className="text-xl sm:text-2xl font-semibold text-walmart-darkBlue">Abonnement & Facturation</h1>
-          <p className="text-sm sm:text-base text-gray-500 mt-1">Gérez votre accès à la marketplace EDEN store.</p>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-gray-200 pb-6">
+        <div>
+          <h1 className="text-3xl font-montserrat font-black text-black uppercase tracking-tight">Abonnement & Facturation</h1>
+          <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mt-2">Gérez votre accès à la marketplace.</p>
         </div>
-        <div className={`w-full sm:w-auto text-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-semibold text-xs sm:text-sm ${currentStatus.color}`}>
-          Statut : {currentStatus.text}
+        <div className={`w-full sm:w-auto text-center px-4 py-2 border-2 font-black uppercase tracking-widest text-[10px] sm:text-xs ${currentStatus.color}`}>
+          STATUT : {currentStatus.text}
         </div>
       </div>
 
       {/* Message si compte actif */}
       {shop?.subscription_status === 'active' && (
-        <div className="bg-green-50 border border-green-200 p-4 sm:p-6 rounded-xl flex flex-col sm:flex-row items-start sm:items-center">
-          <span className="text-2xl sm:text-3xl mr-0 sm:mr-4 mb-2 sm:mb-0">🎉</span>
+        <div className="bg-green-50 border-2 border-green-600 p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <span className="text-3xl text-green-600">✓</span>
           <div>
-            <h3 className="text-base sm:text-lg font-medium text-green-900">Votre boutique est en ligne !</h3>
-            <p className="text-sm sm:text-base text-green-700">Votre abonnement est actif. Vous pouvez recevoir des commandes.</p>
+            <h3 className="text-sm font-montserrat font-black uppercase tracking-widest text-green-800 mb-1">Votre boutique est en ligne !</h3>
+            <p className="text-xs font-bold uppercase tracking-widest text-green-700 leading-relaxed">Votre abonnement est actif. Vous pouvez recevoir des commandes.</p>
             {shop?.subscription_end_date && (
-              <p className="text-xs sm:text-sm font-medium text-green-800 mt-1 sm:mt-2">
-                Valable jusqu'au : {new Date(shop.subscription_end_date).toLocaleDateString('fr-FR')}
+              <p className="text-[10px] font-black font-mono text-green-800 mt-2">
+                VALABLE JUSQU'AU : {new Date(shop.subscription_end_date).toLocaleDateString('fr-FR')}
               </p>
             )}
           </div>
@@ -59,35 +59,37 @@ export default async function BillingPage() {
 
       {/* Zone de paiement (Visible si non payé, expiré ou en attente) */}
       {shop?.subscription_status !== 'active' && (
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="bg-white border-2 border-black">
           
           {/* Tarifs */}
-          <div className="p-5 sm:p-8 border-b border-gray-100 bg-walmart-light">
-            <h2 className="text-lg sm:text-xl font-semibold text-walmart-darkBlue mb-4 sm:mb-6">
+          <div className="p-6 md:p-10 border-b-2 border-black bg-gray-50">
+            <h2 className="text-lg md:text-xl font-montserrat font-black uppercase tracking-widest text-black mb-8">
               Choisissez votre formule ({isPartner ? 'Tarif Partenaire' : 'Tarif Standard'})
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               
-              <div className="bg-white p-5 sm:p-6 rounded-xl border-2 border-transparent hover:border-walmart-blue transition-colors shadow-sm">
-                <h3 className="text-base sm:text-lg font-medium text-gray-900">Mensuel</h3>
-                <p className="text-2xl sm:text-3xl font-bold text-walmart-blue mt-2 sm:mt-4">{monthlyPrice} <span className="text-xs sm:text-sm text-gray-500 font-normal">/ mois</span></p>
-                <ul className="mt-4 sm:mt-6 space-y-2 sm:space-y-3 text-xs sm:text-sm text-gray-600">
-                  <li>✓ Boutique en ligne 24/7</li>
-                  <li>✓ Gestion des commandes</li>
-                  <li>✓ Sans engagement</li>
+              {/* Carte Mensuel */}
+              <div className="bg-white p-6 border-2 border-gray-200 hover:border-black transition-colors">
+                <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500">Mensuel</h3>
+                <p className="text-3xl md:text-4xl font-montserrat font-black text-black mt-2 mb-6">{monthlyPrice} <span className="text-xs font-bold text-gray-400 tracking-widest">/ MOIS</span></p>
+                <ul className="space-y-4 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-black">
+                  <li className="flex items-center gap-3"><span className="text-green-500 text-base">✓</span> Boutique en ligne 24/7</li>
+                  <li className="flex items-center gap-3"><span className="text-green-500 text-base">✓</span> Gestion des commandes</li>
+                  <li className="flex items-center gap-3"><span className="text-green-500 text-base">✓</span> Sans engagement</li>
                 </ul>
               </div>
 
-              <div className="bg-walmart-darkBlue text-white p-5 sm:p-6 rounded-xl border-2 border-walmart-yellow shadow-lg relative">
-                <div className="absolute top-0 right-0 bg-walmart-yellow text-walmart-darkBlue text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-1 rounded-bl-lg rounded-tr-lg">
+              {/* Carte Annuel */}
+              <div className="bg-black text-white p-6 border-2 border-black relative">
+                <div className="absolute top-0 right-0 bg-white text-black text-[10px] font-black uppercase tracking-widest px-3 py-1 border-b-2 border-l-2 border-black">
                   ÉCONOMISEZ
                 </div>
-                <h3 className="text-base sm:text-lg font-medium">Annuel</h3>
-                <p className="text-2xl sm:text-3xl font-bold text-walmart-yellow mt-2 sm:mt-4">{annualPrice} <span className="text-xs sm:text-sm text-white/70 font-normal">/ an</span></p>
-                <ul className="mt-4 sm:mt-6 space-y-2 sm:space-y-3 text-xs sm:text-sm text-gray-300">
-                  <li>✓ Tous les avantages mensuels</li>
-                  <li>✓ Économie sur l'année</li>
-                  <li>✓ Visibilité boostée</li>
+                <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400">Annuel</h3>
+                <p className="text-3xl md:text-4xl font-montserrat font-black text-white mt-2 mb-6">{annualPrice} <span className="text-xs font-bold text-gray-500 tracking-widest">/ AN</span></p>
+                <ul className="space-y-4 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-white">
+                  <li className="flex items-center gap-3"><span className="text-green-500 text-base">✓</span> Tous les avantages mensuels</li>
+                  <li className="flex items-center gap-3"><span className="text-green-500 text-base">✓</span> Économie sur l'année</li>
+                  <li className="flex items-center gap-3"><span className="text-green-500 text-base">✓</span> Visibilité boostée</li>
                 </ul>
               </div>
 
@@ -95,23 +97,23 @@ export default async function BillingPage() {
           </div>
 
           {/* Instructions de paiement */}
-          <div className="p-5 sm:p-8">
-            <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-3 sm:mb-4">Instructions de paiement</h3>
-            <div className="bg-gray-50 p-4 sm:p-6 rounded-lg mb-5 sm:mb-6">
-              <ol className="list-decimal list-inside space-y-3 sm:space-y-4 text-xs sm:text-sm text-gray-700">
-                <li>Effectuez le transfert du montant choisi via <strong>Wave</strong> au <span className="font-bold text-blue-600">01 02 03 04 05</span> ou <strong>Orange Money</strong> au <span className="font-bold text-orange-500">07 08 09 10 11</span>.</li>
-                <li>Mettez le nom de votre boutique en motif du transfert.</li>
+          <div className="p-6 md:p-10">
+            <h3 className="text-sm font-montserrat font-black uppercase tracking-widest text-black mb-4">Instructions de paiement</h3>
+            <div className="bg-gray-50 border border-gray-200 p-6 mb-8">
+              <ol className="list-decimal list-inside space-y-4 text-xs sm:text-sm font-bold uppercase tracking-wider text-gray-600 leading-relaxed">
+                <li>Effectuez le transfert via <strong className="text-black">Wave</strong> au <span className="text-black bg-gray-200 px-2 py-0.5 font-mono">01 02 03 04 05</span> ou <strong className="text-black">Orange Money</strong> au <span className="text-black bg-gray-200 px-2 py-0.5 font-mono">07 08 09 10 11</span>.</li>
+                <li>Mettez le <strong className="text-black">nom de votre boutique</strong> en motif du transfert.</li>
                 <li>Cliquez sur le bouton ci-dessous pour nous notifier de votre paiement.</li>
               </ol>
             </div>
 
             {shop?.subscription_status === 'pending_verification' ? (
-              <div className="text-center p-3 sm:p-4 text-xs sm:text-sm bg-orange-50 text-orange-800 rounded-lg font-medium">
+              <div className="text-center p-6 border-2 border-black bg-gray-100 text-xs sm:text-sm font-black uppercase tracking-widest text-black">
                 ⏳ Nous vérifions votre paiement. Votre compte sera activé sous peu.
               </div>
             ) : (
               <form action={notifyPaymentMade}>
-                <button type="submit" className="w-full py-3 sm:py-4 text-sm sm:text-base bg-walmart-blue text-white font-bold rounded-lg hover:bg-blue-700 transition-colors shadow-md">
+                <button type="submit" className="w-full py-5 bg-black text-white font-montserrat font-black uppercase tracking-widest text-sm hover:bg-gray-900 transition-colors border-2 border-black">
                   J'ai effectué mon transfert Mobile Money
                 </button>
               </form>

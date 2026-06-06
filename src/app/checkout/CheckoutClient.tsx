@@ -56,29 +56,33 @@ export default function CheckoutClient({ userProfile }: { userProfile: any }) {
     }
   }
 
-  const inputClasses = "w-full p-2.5 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-walmart-blue text-gray-900 bg-white placeholder-gray-400 font-medium"
+  // NOUVEAU STYLE DES INPUTS : Brut, carré, majuscule, très lisible
+  const inputClasses = "w-full p-4 text-sm font-bold text-black border-2 border-gray-300 outline-none focus:border-black bg-white placeholder-gray-400 transition-colors"
 
   // ==========================================
-  // ÉCRAN DE SUCCÈS POUR LES INVITES
+  // ÉCRAN DE SUCCÈS (Style Facture E-commerce)
   // ==========================================
   if (successOrders) {
     return (
-      <main className="max-w-3xl mx-auto px-4 py-8 sm:py-16 text-center space-y-6 sm:space-y-8">
-        <div className="w-16 h-16 sm:w-24 sm:h-24 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto text-4xl sm:text-5xl mb-4 sm:mb-6">✓</div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Commande validée !</h1>
-        <p className="text-base sm:text-lg text-gray-500">Merci pour votre achat. Voici vos numéros de suivi à conserver précieusement :</p>
+      <main className="max-w-2xl mx-auto px-4 py-16 sm:py-24 text-center">
+        <div className="w-20 h-20 bg-black text-white flex items-center justify-center mx-auto text-4xl mb-8">✓</div>
+        <h1 className="text-3xl sm:text-5xl font-montserrat font-black uppercase tracking-tight text-black mb-4">Commande Confirmée</h1>
+        <p className="text-sm uppercase tracking-widest text-gray-500 mb-12">Merci pour votre achat. Voici vos numéros de suivi :</p>
         
-        <div className="bg-white rounded-2xl border border-gray-200 p-4 sm:p-6 shadow-sm text-left max-w-lg mx-auto space-y-3 sm:space-y-4">
+        <div className="bg-gray-50 border-2 border-black p-6 text-left space-y-4 mb-12">
           {successOrders.map((order, i) => (
-            <div key={i} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 sm:p-4 bg-gray-50 rounded-xl border border-gray-100 gap-2 sm:gap-0">
-              <span className="font-medium text-gray-700 text-sm sm:text-base">{order.shop_name}</span>
-              <span className="font-mono font-bold text-walmart-blue text-base sm:text-lg select-all cursor-pointer" title="Double-cliquez pour copier">{order.id}</span>
+            <div key={i} className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 border-b border-gray-200 last:border-0 gap-2">
+              <span className="font-bold text-gray-500 uppercase tracking-widest text-xs">Vendeur : <span className="text-black">{order.shop_name}</span></span>
+              <span className="font-mono font-bold text-black text-sm bg-gray-200 px-3 py-1 select-all cursor-pointer" title="Double-cliquez pour copier">
+                {order.id}
+              </span>
             </div>
           ))}
         </div>
         
-        <p className="text-xs sm:text-sm text-gray-400 mt-4">Vous pouvez suivre ces commandes via l'onglet "Suivi rapide" dans le menu.</p>
-        <Link href="/" className="inline-block mt-6 sm:mt-8 bg-walmart-blue text-white px-6 sm:px-8 py-3 rounded-xl font-bold hover:bg-blue-700 transition-colors text-sm sm:text-base">Retour à la boutique</Link>
+        <Link href="/" className="inline-block w-full sm:w-auto px-10 py-4 bg-black text-white text-sm font-bold uppercase tracking-widest border-2 border-black hover:bg-gray-900 transition-colors">
+          Retourner au catalogue
+        </Link>
       </main>
     )
   }
@@ -87,44 +91,53 @@ export default function CheckoutClient({ userProfile }: { userProfile: any }) {
   // ÉCRAN DE CAISSE (CHECKOUT)
   // ==========================================
   return (
-    <main className="max-w-5xl mx-auto px-4 py-6 sm:py-12">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+    <main className="max-w-[1400px] mx-auto px-4 py-8 sm:py-16">
+      
+      <h1 className="text-3xl md:text-5xl font-montserrat font-black text-black uppercase tracking-tight mb-8 md:mb-12 border-b border-gray-200 pb-4">
+        Validation
+      </h1>
+
+      <div className="flex flex-col lg:flex-row gap-12 lg:gap-20">
         
-        <div className="space-y-4 sm:space-y-8">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Informations de livraison</h2>
-          <form id="checkout-form" onSubmit={handleSubmit} className="bg-white p-5 sm:p-8 rounded-2xl border border-gray-200 shadow-sm space-y-4">
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* COLONNE GAUCHE : Formulaire de livraison */}
+        <div className="flex-1">
+          <h2 className="text-lg font-montserrat font-black uppercase tracking-widest text-black mb-6">1. Adresse de livraison</h2>
+          
+          <form id="checkout-form" onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nom complet</label>
-                <input required name="full_name" type="text" defaultValue={userProfile?.full_name || ''} className={inputClasses} placeholder="Jean Dupont" />
+                <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Nom complet *</label>
+                <input required name="full_name" type="text" defaultValue={userProfile?.full_name || ''} className={inputClasses} placeholder="Ex: Jean Dupont" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Email *</label>
                 <input required name="email" type="email" className={inputClasses} placeholder="jean@email.com" />
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Téléphone</label>
-              <input required name="phone" type="tel" defaultValue={userProfile?.phone || ''} className={inputClasses} placeholder="Ex: 07 00 00 00 00" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Adresse précise</label>
-              <input required name="address" type="text" defaultValue={userProfile?.address || ''} className={inputClasses} placeholder="Quartier, Rue, Maison..." />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Ville</label>
-              <input required name="city" type="text" defaultValue={userProfile?.city || ''} className={inputClasses} placeholder="Ex: Abidjan, Dakar..." />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Téléphone *</label>
+                <input required name="phone" type="tel" defaultValue={userProfile?.phone || ''} className={inputClasses} placeholder="Ex: 07 00 00 00 00" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Ville / Commune *</label>
+                <input required name="city" type="text" defaultValue={userProfile?.city || ''} className={inputClasses} placeholder="Ex: Abidjan, Cocody..." />
+              </div>
             </div>
 
-            {/* SECTION CRÉATION DE COMPTE OPTIONNELLE (Visible uniquement pour les invités) */}
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Adresse précise *</label>
+              <input required name="address" type="text" defaultValue={userProfile?.address || ''} className={inputClasses} placeholder="Quartier, Rue, Bâtiment..." />
+            </div>
+
+            {/* SECTION CRÉATION DE COMPTE OPTIONNELLE */}
             {!userProfile && (
-              <div className="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-gray-200">
-                <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-2">Créer un compte (Optionnel)</h3>
-                <p className="text-xs sm:text-sm text-gray-500 mb-4">Gagnez du temps pour vos prochains achats et suivez vos commandes facilement en choisissant un mot de passe.</p>
+              <div className="mt-12 pt-8 border-t border-gray-200">
+                <h2 className="text-lg font-montserrat font-black uppercase tracking-widest text-black mb-2">2. Créer un compte (Optionnel)</h2>
+                <p className="text-xs text-gray-500 mb-6 uppercase tracking-wider">Suivez vos commandes plus rapidement la prochaine fois.</p>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Mot de passe</label>
                   <input name="password" type="password" className={inputClasses} placeholder="Minimum 6 caractères" minLength={6} />
                 </div>
               </div>
@@ -132,30 +145,59 @@ export default function CheckoutClient({ userProfile }: { userProfile: any }) {
           </form>
         </div>
 
-        {/* RÉSUMÉ ET PAIEMENT */}
-        <div className="space-y-4 sm:space-y-8">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Résumé du paiement</h2>
-          <div className="bg-walmart-darkBlue text-white p-5 sm:p-8 rounded-2xl sm:rounded-3xl shadow-xl space-y-4 sm:space-y-6">
-            <div className="space-y-2">
+        {/* COLONNE DROITE : Résumé de la commande */}
+        <div className="w-full lg:w-[450px] shrink-0">
+          <div className="bg-gray-50 p-6 md:p-8 border-2 border-black sticky top-24">
+            <h2 className="text-lg font-montserrat font-black uppercase tracking-widest text-black mb-6 border-b border-gray-200 pb-4">
+              Résumé de la commande
+            </h2>
+            
+            {/* Liste des articles simplifiée */}
+            <div className="space-y-4 mb-8">
               {cart.map((item) => (
-                <div key={item.product_id} className="flex justify-between text-xs sm:text-sm opacity-80">
-                  <span>{item.quantity}x {item.title}</span>
-                  <span>{(item.price * item.quantity).toLocaleString()} F</span>
+                <div key={`${item.product_id}-${item.shop_id}`} className="flex justify-between items-center text-sm font-bold uppercase tracking-wide">
+                  <span className="text-gray-500 max-w-[200px] truncate">{item.quantity}x {item.title}</span>
+                  <span className="text-black shrink-0">{(item.price * item.quantity).toLocaleString()} F</span>
                 </div>
               ))}
             </div>
-            <div className="border-t border-white/20 pt-3 sm:pt-4 flex justify-between items-center text-lg sm:text-xl font-bold">
-              <span>Total à payer</span>
-              <span>{cartTotal.toLocaleString()} XOF</span>
+
+            <div className="space-y-4 mb-6 text-sm font-bold uppercase tracking-wide border-t border-gray-200 pt-6">
+              <div className="flex justify-between text-gray-600">
+                <span>Sous-total</span>
+                <span>{cartTotal.toLocaleString()} F</span>
+              </div>
+              <div className="flex justify-between text-gray-600">
+                <span>Livraison</span>
+                <span className="text-xs text-gray-400 normal-case italic font-normal">À régler à la réception</span>
+              </div>
             </div>
-            <div className="bg-white/10 p-3 sm:p-4 rounded-xl text-xs sm:text-sm">
-              <p className="flex items-center gap-2">
-                <span>ℹ️</span> Paiement à la livraison ou via Mobile Money lors de la réception.
+
+            <div className="border-t border-black pt-4 mb-8 flex justify-between items-center text-black">
+              <span className="font-bold text-sm uppercase tracking-widest">Total à payer</span>
+              <span className="text-2xl font-montserrat font-black text-red-600">
+                {cartTotal.toLocaleString()} XOF
+              </span>
+            </div>
+
+            <div className="bg-white border border-gray-200 p-4 mb-8 flex items-start gap-3">
+              <span className="text-xl">💳</span>
+              <p className="text-xs text-gray-500 font-bold uppercase tracking-wider leading-relaxed">
+                Le paiement s'effectuera en espèces ou via Mobile Money directement à la livraison.
               </p>
             </div>
-            <button form="checkout-form" disabled={isSubmitting} className="w-full bg-white text-walmart-darkBlue py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg hover:bg-gray-100 transition-all shadow-lg disabled:opacity-50">
-              {isSubmitting ? "Traitement..." : "Confirmer ma commande 🚀"}
+
+            <button 
+              form="checkout-form" 
+              disabled={isSubmitting} 
+              className="w-full bg-black text-white py-5 font-montserrat font-black uppercase tracking-widest text-sm hover:bg-gray-900 transition-all border-2 border-black disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? "Traitement en cours..." : "Confirmer la commande"}
             </button>
+            
+            <p className="text-center text-xs text-gray-400 font-bold uppercase tracking-widest mt-6">
+              🔒 Vos données sont sécurisées
+            </p>
           </div>
         </div>
 

@@ -11,10 +11,11 @@ export default async function ClientInboxPage() {
 
   if (!user) redirect('/login')
 
-  // 1. Récupérer le profil pour dire bonjour
   const { data: profile } = await supabase.from('profiles').select('full_name').eq('id', user.id).single()
+  
+  // Vérifier si le client est aussi un vendeur pour le menu latéral
+  const { data: userShop } = await supabase.from('shops').select('id, name').eq('seller_id', user.id).maybeSingle()
 
-  // 2. Récupérer toutes les conversations de CE client
   const { data: conversations } = await supabase
     .from('conversations')
     .select(`
@@ -26,74 +27,85 @@ export default async function ClientInboxPage() {
     .eq('customer_id', user.id)
     .order('updated_at', { ascending: false })
 
-  // 3. Formater les données pour trouver le dernier message et compter les non-lus
   const formattedConversations = conversations?.map((conv: any) => {
-    // Trier les messages du plus récent au plus ancien
     const sortedMessages = conv.messages.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     const lastMessage = sortedMessages[0]
-    
-    // Un message est "non lu" si is_read est false ET que l'expéditeur N'EST PAS le client lui-même
     const unreadCount = conv.messages.filter((m: any) => !m.is_read && m.sender_id !== user.id).length
 
-    return {
-      ...conv,
-      lastMessage,
-      unreadCount
-    }
+    return { ...conv, lastMessage, unreadCount }
   }) || []
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white font-sans">
       <Navbar />
 
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="max-w-[1400px] mx-auto px-4 py-8 md:py-16">
         
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-walmart-darkBlue">Mes Messages</h1>
-          <p className="text-gray-500 mt-2">Bonjour {profile?.full_name}, retrouvez ici vos échanges avec les vendeurs.</p>
+        {/* EN-TÊTE */}
+        <div className="mb-10 md:mb-16 border-b border-gray-200 pb-6">
+          <h1 className="text-3xl md:text-5xl font-montserrat font-black text-black uppercase tracking-tight">Mes Messages</h1>
+          <p className="text-xs md:text-sm text-gray-500 uppercase tracking-widest font-bold mt-3">
+            Bonjour {profile?.full_name}, vos échanges avec nos marques.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-16">
           
-          {/* Menu latéral Client */}
-          <div className="md:col-span-1 space-y-2">
-            <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col gap-2">
-              <Link href="/account" className="block px-4 py-2 text-gray-600 hover:bg-gray-50 font-medium rounded-lg transition-colors">
-                Mes commandes
-              </Link>
-              <Link href="/account/messages" className="block px-4 py-2 bg-blue-50 text-walmart-blue font-medium rounded-lg">
-                Mes messages
-              </Link>
-              <Link href="/account/favorites" className="block px-4 py-2 text-gray-600 hover:bg-gray-50 font-medium rounded-lg transition-colors">
-                Mes favoris
-              </Link>
-              <Link href="/track" className="block px-4 py-2 text-gray-600 hover:bg-gray-50 font-medium rounded-lg transition-colors">
-                Suivi rapide (Invité)
-              </Link>
+          {/* MENU LATÉRAL STRICT */}
+          <div className="lg:w-64 flex-shrink-0">
+            <div className="bg-gray-50 border-2 border-black sticky top-24 p-4 space-y-2">
+              {userShop && (
+                <div className="mb-6">
+                  <Link href="/seller/dashboard" className="block w-full text-center px-4 py-4 bg-black text-white font-montserrat font-black uppercase tracking-widest text-xs hover:bg-gray-900 transition-colors border border-black">
+                    ⚙️ Espace Vendeur
+                  </Link>
+                </div>
+              )}
+              <nav className="flex flex-col space-y-1">
+                <Link href="/account" className="px-4 py-3 text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-black hover:bg-gray-100 transition-colors">
+                  Mes commandes
+                </Link>
+                <Link href="/account/messages" className="px-4 py-3 text-xs font-bold uppercase tracking-widest bg-black text-white transition-colors">
+                  Mes messages
+                </Link>
+                <Link href="/account/favorites" className="px-4 py-3 text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-black hover:bg-gray-100 transition-colors">
+                  Mes favoris
+                </Link>
+                <Link href="/track" className="px-4 py-3 text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-black hover:bg-gray-100 transition-colors mt-2">
+                  Suivi rapide
+                </Link>
+              </nav>
+              <div className="border-t border-gray-300 my-4"></div>
+              <form action="/auth/signout" method="POST">
+                <button type="submit" className="w-full text-left px-4 py-3 text-xs font-bold uppercase tracking-widest text-red-600 hover:bg-red-50 transition-colors">
+                  Déconnexion
+                </button>
+              </form>
             </div>
           </div>
 
-          {/* Liste des conversations */}
-          <div className="md:col-span-3">
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+          {/* LISTE DES MESSAGES */}
+          <div className="flex-1">
+            <div className="bg-white border-2 border-black overflow-hidden">
               {formattedConversations.length === 0 ? (
-                <div className="p-12 text-center text-gray-500">
-                  <span className="text-5xl mb-4 block">💬</span>
-                  <p>Vous n'avez aucune conversation en cours.</p>
+                <div className="p-12 md:p-20 text-center bg-gray-50">
+                  <h3 className="text-xl md:text-2xl font-montserrat font-black text-black uppercase tracking-widest mb-2">Aucun Message</h3>
+                  <p className="text-xs uppercase tracking-widest text-gray-500">Vous n'avez aucune conversation en cours.</p>
                 </div>
               ) : (
-                <div className="divide-y divide-gray-100">
+                <div className="divide-y-2 divide-black">
                   {formattedConversations.map((conv: any) => (
                     <Link 
                       key={conv.id} 
                       href={`/account/messages/${conv.shops?.id}`}
-                      className="block p-4 hover:bg-gray-50 transition-colors"
+                      className="block p-4 sm:p-6 bg-white hover:bg-gray-50 transition-colors"
                     >
-                      <div className="flex items-center space-x-4">
-                        {/* Logo Boutique */}
-                        <div className="w-12 h-12 rounded-full border border-gray-200 bg-gray-50 overflow-hidden flex items-center justify-center font-bold text-gray-400 flex-shrink-0">
+                      <div className="flex items-center space-x-4 sm:space-x-6">
+                        
+                        {/* Logo Boutique (Carré) */}
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gray-100 border-2 border-black overflow-hidden flex items-center justify-center font-montserrat font-black text-xl flex-shrink-0">
                           {conv.shops?.logo_url ? (
-                            <img src={conv.shops.logo_url} alt={conv.shops.name} className="w-full h-full object-cover" />
+                            <img src={conv.shops.logo_url} alt={conv.shops.name} className="w-full h-full object-cover grayscale-[20%]" />
                           ) : (
                             conv.shops?.name?.charAt(0).toUpperCase()
                           )}
@@ -101,29 +113,30 @@ export default async function ClientInboxPage() {
                         
                         {/* Aperçu */}
                         <div className="flex-1 min-w-0">
-                          <div className="flex justify-between items-baseline mb-1">
-                            <h3 className={`text-sm truncate ${conv.unreadCount > 0 ? 'font-bold text-gray-900' : 'font-semibold text-gray-700'}`}>
+                          <div className="flex justify-between items-baseline mb-2">
+                            <h3 className={`text-sm md:text-base uppercase tracking-widest truncate ${conv.unreadCount > 0 ? 'font-montserrat font-black text-black' : 'font-bold text-gray-600'}`}>
                               {conv.shops?.name}
                             </h3>
-                            <span className="text-xs text-gray-400 whitespace-nowrap ml-2">
+                            <span className="text-[10px] font-bold sm:text-xs text-gray-400 uppercase tracking-widest whitespace-nowrap ml-2">
                               {conv.lastMessage ? new Date(conv.lastMessage.created_at).toLocaleDateString('fr-FR') : ''}
                             </span>
                           </div>
                           
-                          <div className="flex items-center justify-between">
-                            <p className={`text-sm truncate pr-4 ${conv.unreadCount > 0 ? 'font-medium text-gray-900' : 'text-gray-500'}`}>
+                          <div className="flex items-center justify-between gap-4">
+                            <p className={`text-xs sm:text-sm truncate ${conv.unreadCount > 0 ? 'font-bold text-black' : 'text-gray-500'}`}>
                               {conv.lastMessage?.sender_id === user.id ? 'Vous: ' : ''}
                               {conv.lastMessage?.content || 'Nouvelle conversation'}
                             </p>
                             
-                            {/* 🔥 LA PASTILLE ROUGE (BADGE) 🔥 */}
+                            {/* Badge Brutaliste */}
                             {conv.unreadCount > 0 && (
-                              <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full flex-shrink-0">
-                                {conv.unreadCount}
+                              <span className="bg-red-600 text-white text-[10px] font-black uppercase tracking-widest px-2 py-1 shrink-0 border border-red-600">
+                                {conv.unreadCount} NOUVEAU{conv.unreadCount > 1 ? 'X' : ''}
                               </span>
                             )}
                           </div>
                         </div>
+                        
                       </div>
                     </Link>
                   ))}

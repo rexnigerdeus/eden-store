@@ -13,151 +13,112 @@ export default async function ShopPage({
   const resolvedParams = await params
   const shopSlug = resolvedParams.slug
 
-  // 1. Récupérer les infos de la boutique
-  const { data: shop, error: shopError } = await supabase
-    .from('shops')
-    .select('*')
-    .eq('slug', shopSlug)
-    .single()
+  const { data: shop, error: shopError } = await supabase.from('shops').select('*').eq('slug', shopSlug).single()
+  if (shopError || !shop) notFound()
 
-  if (shopError || !shop) {
-    notFound()
-  }
+  const { data: products } = await supabase.from('products').select('*').eq('shop_id', shop.id).eq('is_available', true).order('created_at', { ascending: false })
 
-  // 2. Récupérer les produits en ligne de cette boutique
-  const { data: products } = await supabase
-    .from('products')
-    .select('*')
-    .eq('shop_id', shop.id)
-    .eq('is_available', true)
-    .order('created_at', { ascending: false })
-
-  // 3. Variables pour vérifier si le vendeur a rempli les sections optionnelles
   const hasAboutSection = shop.story || shop.bio || shop.values
   const hasPoliciesSection = shop.delivery_locations || shop.return_policy || shop.policies
 
-  // 4. Vérifier si l'utilisateur est abonné
   const { data: { user } } = await supabase.auth.getUser()
   let isSubscribed = false
   if (user && shop) {
-    const { data: sub } = await supabase
-      .from('subscriptions')
-      .select('id')
-      .eq('user_id', user.id)
-      .eq('shop_id', shop.id)
-      .single()
+    const { data: sub } = await supabase.from('subscriptions').select('id').eq('user_id', user.id).eq('shop_id', shop.id).single()
     isSubscribed = !!sub
   }
 
+  const sectionTitleClasses = "text-xs font-montserrat font-black text-black uppercase tracking-widest mb-4 border-b border-black pb-2"
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       <Navbar />
 
-      <main className="pb-20">
+      <main className="pb-24">
         
-        {/* --- 1. L'EN-TÊTE (HERO SECTION) --- */}
-        <div className="bg-white border-b border-gray-200">
-          
-          {/* Bannière */}
-          <div className="h-32 sm:h-48 md:h-72 bg-walmart-light relative overflow-hidden">
+        {/* --- HERO SECTION --- */}
+        <div className="relative">
+          {/* Bannière Brutaliste */}
+          <div className="h-48 md:h-80 bg-gray-100 relative overflow-hidden border-b-2 border-black">
             {shop.banner_url ? (
-              <img src={shop.banner_url} alt="Bannière" className="w-full h-full object-cover" />
+              <img src={shop.banner_url} alt="Bannière" className="w-full h-full object-cover grayscale-[20%]" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-r from-blue-50 to-indigo-50">
-                <span className="text-4xl sm:text-6xl opacity-20">🏪</span>
-              </div>
+              <div className="w-full h-full bg-black opacity-5"></div>
             )}
-            {/* Overlay sombre léger pour faire ressortir le logo si la bannière est claire */}
-            <div className="absolute inset-0 bg-black/10"></div>
           </div>
 
-          {/* Informations de la boutique */}
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="relative -mt-12 sm:-mt-16 md:-mt-24 pb-6 sm:pb-8 flex flex-col items-center sm:items-end sm:flex-row sm:gap-6 md:gap-8">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
+            <div className="flex flex-col md:flex-row gap-6 md:gap-10 -mt-16 md:-mt-24 relative z-10 mb-12 md:mb-20">
               
-              {/* Logo */}
-              <div className="w-24 h-24 sm:w-36 sm:h-36 md:w-48 md:h-48 rounded-full border-4 border-white bg-white overflow-hidden shadow-lg flex-shrink-0 z-10">
+              {/* Logo Carré Massif */}
+              <div className="w-32 h-32 md:w-48 md:h-48 bg-white border-2 border-black overflow-hidden flex-shrink-0">
                 {shop.logo_url ? (
                   <img src={shop.logo_url} alt={shop.name} className="w-full h-full object-cover" />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-walmart-blue to-walmart-darkBlue flex items-center justify-center text-white text-3xl sm:text-5xl md:text-6xl font-bold">
-                    {shop.name.charAt(0).toUpperCase()}
+                  <div className="w-full h-full bg-black flex items-center justify-center text-white text-5xl md:text-7xl font-montserrat font-black uppercase">
+                    {shop.name.charAt(0)}
                   </div>
                 )}
               </div>
 
-              {/* Textes et réseaux sociaux */}
-              <div className="mt-4 sm:mt-0 flex-1 text-center sm:text-left pt-2 sm:pt-16 md:pt-24">
-                <div className="mt-3 sm:mt-5 flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-4 sm:gap-6">
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">{shop.name}</h1>
-                  <SubscribeButton 
-                    shopId={shop.id} 
-                    initialIsSubscribed={isSubscribed} 
-                    isLoggedIn={!!user} 
-                  />
+              {/* Titre et Action */}
+              <div className="pt-2 md:pt-28 flex-1 flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div>
+                  <h1 className="text-3xl md:text-5xl lg:text-6xl font-montserrat font-black text-black uppercase tracking-tight leading-none mb-2">
+                    {shop.name}
+                  </h1>
+                  {shop.expertise && (
+                    <p className="text-xs md:text-sm font-bold text-gray-500 uppercase tracking-widest">{shop.expertise}</p>
+                  )}
                 </div>
-                
-                
-                {/* Le slogan / Expertise */}
-                {shop.expertise && (
-                  <p className="text-base sm:text-lg font-medium text-walmart-blue mt-2 sm:mt-1">{shop.expertise}</p>
-                )}
-                
-                {shop.description && (
-                  <p className="text-sm sm:text-base text-gray-600 mt-2 sm:mt-3 max-w-2xl leading-relaxed px-4 sm:px-0">{shop.description}</p>
-                )}
-                
-                {/* Réseaux Sociaux */}
-                <div className="mt-4 sm:mt-5 flex flex-wrap items-center justify-center sm:justify-start gap-4 sm:gap-6">
-                  {shop.instagram && (
-                    <a href={shop.instagram} target="_blank" rel="noopener noreferrer" className="text-sm sm:text-base text-gray-500 hover:text-pink-600 font-medium transition-colors flex items-center gap-2">
-                      <span>📸</span> Instagram
-                    </a>
-                  )}
-                  {shop.facebook && (
-                    <a href={shop.facebook} target="_blank" rel="noopener noreferrer" className="text-sm sm:text-base text-gray-500 hover:text-blue-600 font-medium transition-colors flex items-center gap-2">
-                      <span>📘</span> Facebook
-                    </a>
-                  )}
-                  {shop.tiktok && (
-                    <a href={shop.tiktok} target="_blank" rel="noopener noreferrer" className="text-sm sm:text-base text-gray-500 hover:text-black font-medium transition-colors flex items-center gap-2">
-                      <span>🎵</span> TikTok
-                    </a>
-                  )}
+                <div className="shrink-0">
+                  <SubscribeButton shopId={shop.id} initialIsSubscribed={isSubscribed} isLoggedIn={!!user} />
                 </div>
               </div>
-
             </div>
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 sm:mt-12 flex flex-col lg:grid lg:grid-cols-3 gap-8 lg:gap-12">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 flex flex-col lg:flex-row gap-12 lg:gap-16">
           
-          {/* --- COLONNE DE GAUCHE : L'UNIVERS DE LA BOUTIQUE (1/3) --- */}
-          <div className="space-y-6 sm:space-y-8 lg:col-span-1 order-2 lg:order-1">
+          {/* --- COLONNE DE GAUCHE : INFOS (1/3) --- */}
+          <div className="lg:w-1/3 space-y-8">
             
+            {shop.description && (
+              <div className="text-sm font-medium text-gray-600 leading-relaxed">
+                {shop.description}
+              </div>
+            )}
+
+            {/* Réseaux Sociaux Minimalistes */}
+            {(shop.instagram || shop.facebook || shop.tiktok) && (
+              <div className="flex flex-wrap gap-4 pt-4">
+                {shop.instagram && <a href={shop.instagram} target="_blank" className="text-[10px] font-bold text-black uppercase tracking-widest border border-black px-3 py-1.5 hover:bg-black hover:text-white transition-colors">Instagram</a>}
+                {shop.facebook && <a href={shop.facebook} target="_blank" className="text-[10px] font-bold text-black uppercase tracking-widest border border-black px-3 py-1.5 hover:bg-black hover:text-white transition-colors">Facebook</a>}
+                {shop.tiktok && <a href={shop.tiktok} target="_blank" className="text-[10px] font-bold text-black uppercase tracking-widest border border-black px-3 py-1.5 hover:bg-black hover:text-white transition-colors">TikTok</a>}
+              </div>
+            )}
+
             {hasAboutSection && (
-              <div className="bg-white p-5 sm:p-6 lg:p-8 rounded-2xl shadow-sm border border-gray-100">
-                <h2 className="text-lg sm:text-xl font-bold text-walmart-darkBlue mb-4 sm:mb-6 flex items-center gap-2">
-                  <span>📖</span> À propos de nous
-                </h2>
-                <div className="space-y-4 sm:space-y-6 text-sm sm:text-base text-gray-600 leading-relaxed">
+              <div className="border border-gray-200 p-6 bg-gray-50">
+                <h2 className={sectionTitleClasses}>Manifesto</h2>
+                <div className="space-y-6 text-sm text-gray-600 leading-relaxed">
                   {shop.story && (
                     <div>
-                      <h3 className="text-xs sm:text-sm font-bold text-gray-900 uppercase tracking-wider mb-1 sm:mb-2">Notre Histoire</h3>
-                      <p className="text-xs sm:text-sm whitespace-pre-wrap">{shop.story}</p>
+                      <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Notre Histoire</h3>
+                      <p className="whitespace-pre-wrap">{shop.story}</p>
                     </div>
                   )}
                   {shop.bio && (
                     <div>
-                      <h3 className="text-xs sm:text-sm font-bold text-gray-900 uppercase tracking-wider mb-1 sm:mb-2">Le Vendeur</h3>
-                      <p className="text-xs sm:text-sm whitespace-pre-wrap">{shop.bio}</p>
+                      <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Le Créateur</h3>
+                      <p className="whitespace-pre-wrap">{shop.bio}</p>
                     </div>
                   )}
                   {shop.values && (
-                    <div className="bg-blue-50 p-3 sm:p-4 rounded-xl border border-blue-100">
-                      <h3 className="text-xs sm:text-sm font-bold text-walmart-darkBlue uppercase tracking-wider mb-1 sm:mb-2">Nos Valeurs</h3>
-                      <p className="text-xs sm:text-sm text-blue-900 whitespace-pre-wrap">{shop.values}</p>
+                    <div>
+                      <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Valeurs</h3>
+                      <p className="text-black font-medium whitespace-pre-wrap">{shop.values}</p>
                     </div>
                   )}
                 </div>
@@ -165,60 +126,62 @@ export default async function ShopPage({
             )}
 
             {hasPoliciesSection && (
-              <div className="bg-white p-5 sm:p-6 lg:p-8 rounded-2xl shadow-sm border border-gray-100">
-                <h2 className="text-lg sm:text-xl font-bold text-walmart-darkBlue mb-4 sm:mb-6 flex items-center gap-2">
-                  <span>🛡️</span> Confiance & Livraison
-                </h2>
-                <div className="space-y-4 sm:space-y-6 text-sm sm:text-base text-gray-600">
+              <div className="border border-gray-200 p-6">
+                <h2 className={sectionTitleClasses}>Informations d'achat</h2>
+                <div className="space-y-6 text-sm text-gray-600">
                   {shop.delivery_locations && (
                     <div>
-                      <h3 className="text-xs sm:text-sm font-bold text-gray-900 uppercase tracking-wider mb-1 sm:mb-2 flex items-center gap-2"><span>📍</span> Zones de livraison</h3>
-                      <p className="text-xs sm:text-sm">{shop.delivery_locations}</p>
+                      <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Zones de livraison</h3>
+                      <p>{shop.delivery_locations}</p>
                     </div>
                   )}
                   {shop.return_policy && (
                     <div>
-                      <h3 className="text-xs sm:text-sm font-bold text-gray-900 uppercase tracking-wider mb-1 sm:mb-2 flex items-center gap-2"><span>🔄</span> Politique de retour</h3>
-                      <p className="text-xs sm:text-sm whitespace-pre-wrap">{shop.return_policy}</p>
+                      <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Politique de retour</h3>
+                      <p className="whitespace-pre-wrap">{shop.return_policy}</p>
                     </div>
                   )}
                   {shop.policies && (
                     <div>
-                      <h3 className="text-xs sm:text-sm font-bold text-gray-900 uppercase tracking-wider mb-1 sm:mb-2 flex items-center gap-2"><span>📜</span> Garanties</h3>
-                      <p className="text-xs sm:text-sm whitespace-pre-wrap">{shop.policies}</p>
+                      <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Garanties</h3>
+                      <p className="whitespace-pre-wrap">{shop.policies}</p>
                     </div>
                   )}
                 </div>
               </div>
             )}
-            
           </div>
 
-          {/* --- COLONNE DE DROITE : LE CATALOGUE PRODUITS (2/3) --- */}
-          <div className="lg:col-span-2 order-1 lg:order-2">
-            <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4 sm:mb-8 border-b border-gray-200 pb-3 sm:pb-4">
-              Notre catalogue d'articles ({products?.length || 0})
-            </h2>
+          {/* --- COLONNE DE DROITE : PRODUITS (2/3) --- */}
+          <div className="lg:w-2/3">
+            <div className="flex items-center justify-between mb-8 border-b border-gray-200 pb-4">
+              <h2 className="text-xl md:text-2xl font-montserrat font-black text-black uppercase tracking-tight">
+                Collection
+              </h2>
+              <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                {products?.length || 0} Article(s)
+              </span>
+            </div>
 
             {products && products.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-10 md:gap-x-6 md:gap-y-12">
                 {products.map((product) => (
-                  <Link key={product.id} href={`/product/${product.id}`} className="group flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
-                    <div className="aspect-[4/5] bg-gray-100 relative overflow-hidden">
+                  <Link key={product.id} href={`/product/${product.id}`} className="group flex flex-col bg-white">
+                    <div className="aspect-[3/4] bg-gray-100 relative overflow-hidden mb-4 border border-gray-100">
                       {product.cover_image_url ? (
-                        <img src={product.cover_image_url} alt={product.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                        <img src={product.cover_image_url} alt={product.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-400"><span className="text-5xl">📷</span></div>
+                        <div className="w-full h-full flex items-center justify-center text-gray-300 text-2xl font-montserrat font-black uppercase">ASIM</div>
                       )}
                     </div>
-                    <div className="p-3 sm:p-4 flex flex-col flex-1">
-                      <h3 className="text-sm sm:text-base text-gray-900 font-medium line-clamp-2 group-hover:text-walmart-blue transition-colors leading-tight">{product.title}</h3>
-                      <div className="mt-auto pt-3 sm:pt-4 flex items-center justify-between">
-                        <span className="text-base sm:text-lg font-bold text-walmart-darkBlue">
-                          {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'XOF' }).format(product.price)}
-                        </span>
-                        <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-blue-50 text-walmart-blue flex items-center justify-center group-hover:bg-walmart-blue group-hover:text-white transition-colors text-sm sm:text-base">
-                          +
+                    
+                    <div className="flex flex-col">
+                      <h3 className="text-sm md:text-base text-black font-montserrat font-bold uppercase tracking-wide truncate group-hover:underline">
+                        {product.title}
+                      </h3>
+                      <div className="mt-2">
+                        <span className="text-sm md:text-base font-bold text-red-600">
+                          {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'XOF', maximumFractionDigits: 0 }).format(product.price)}
                         </span>
                       </div>
                     </div>
@@ -226,10 +189,9 @@ export default async function ShopPage({
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12 sm:py-20 bg-white rounded-2xl border border-gray-100 shadow-sm px-4">
-                <span className="text-4xl sm:text-5xl opacity-50 mb-3 sm:mb-4 block">📦</span>
-                <h3 className="text-lg sm:text-xl font-medium text-gray-900 mb-2">Boutique en préparation</h3>
-                <p className="text-sm sm:text-base text-gray-500">Cette boutique ajoutera bientôt ses articles.</p>
+              <div className="text-center py-20 bg-gray-50 border border-gray-200">
+                <h3 className="text-xl font-montserrat font-black text-black uppercase tracking-widest mb-2">Boutique vide</h3>
+                <p className="text-xs text-gray-500 uppercase tracking-widest">La collection n'est pas encore disponible.</p>
               </div>
             )}
           </div>

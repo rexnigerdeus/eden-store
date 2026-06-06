@@ -16,7 +16,6 @@ export default async function SellerChatPage({
 
   if (!user) redirect('/login')
 
-  // Récupérer la conversation et s'assurer qu'elle appartient bien à une boutique de CE vendeur
   const { data: conversation } = await supabase
     .from('conversations')
     .select(`
@@ -26,12 +25,11 @@ export default async function SellerChatPage({
       profiles!customer_id (full_name)
     `)
     .eq('id', conversationId)
-    .eq('shops.seller_id', user.id) // Sécurité RLS
+    .eq('shops.seller_id', user.id)
     .single()
 
   if (!conversation) notFound()
 
-  // Récupérer l'historique des messages
   const { data: messages } = await supabase
     .from('messages')
     .select('*')
@@ -39,10 +37,11 @@ export default async function SellerChatPage({
     .order('created_at', { ascending: true })
 
   return (
-    <div className="max-w-4xl space-y-4 sm:space-y-6">
-      <div>
-        <Link href="/seller/dashboard/messages" className="text-sm sm:text-base text-gray-500 hover:text-blue-600 font-medium flex items-center gap-1.5 sm:gap-2 w-fit mb-3 sm:mb-4">
-          &larr; Retour aux messages
+    <div className="max-w-[1000px] mx-auto space-y-6">
+      
+      <div className="border-b border-gray-200 pb-6 flex items-center">
+        <Link href="/seller/dashboard/messages" className="text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-black transition-colors underline">
+          &larr; Retour à la boîte de réception
         </Link>
       </div>
 

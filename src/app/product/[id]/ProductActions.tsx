@@ -11,7 +11,6 @@ export default function ProductActions({ product }: { product: any }) {
   const [quantity, setQuantity] = useState(1)
   const [isAdded, setIsAdded] = useState(false)
 
-  // Prépare l'objet article pour le panier
   const cartItem = {
     product_id: product.id,
     title: product.title,
@@ -22,63 +21,65 @@ export default function ProductActions({ product }: { product: any }) {
     cover_image_url: product.cover_image_url
   }
 
-  // Action 1 : Ajouter au panier et rester sur la page
   const handleAddToCart = () => {
     addToCart(cartItem)
     setIsAdded(true)
-    // Le bouton redevient normal après 2 secondes
     setTimeout(() => setIsAdded(false), 2000)
   }
 
-  // Action 2 : Acheter maintenant (Ajoute au panier et redirige)
   const handleBuyNow = () => {
     addToCart(cartItem)
-    router.push('/cart') // On l'envoie vers le panier pour valider
+    router.push('/cart')
   }
 
   return (
-    <div className="space-y-4 mt-8">
-      {/* Sélecteur de quantité */}
-      <div className="flex items-center gap-4">
-        <span className="text-gray-700 font-medium">Quantité :</span>
-        <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+    <div className="mt-6 mb-8 w-full space-y-4">
+      
+      {/* SÉLECTEUR DE QUANTITÉ */}
+      <div>
+        <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">
+          Quantité
+        </label>
+        <div className="flex items-center justify-between border border-gray-300 w-32 h-12 bg-white">
           <button 
-            onClick={() => setQuantity(Math.max(1, quantity - 1))}
-            className="px-3 py-1 bg-gray-50 hover:bg-gray-100 text-gray-600 transition-colors"
+            type="button"
+            onClick={() => setQuantity(Math.max(1, quantity - 1))} 
+            className="w-10 h-full text-xl text-black hover:bg-gray-100 transition-colors flex items-center justify-center"
           >
             -
           </button>
-          <span className="px-4 py-1 font-medium text-gray-900 border-x border-gray-300">
-            {quantity}
-          </span>
+          <span className="font-bold text-sm text-black">{quantity}</span>
           <button 
-            onClick={() => setQuantity(quantity + 1)}
-            className="px-3 py-1 bg-gray-50 hover:bg-gray-100 text-gray-600 transition-colors"
+            type="button"
+            onClick={() => setQuantity(quantity + 1)} 
+            className="w-10 h-full text-xl text-black hover:bg-gray-100 transition-colors flex items-center justify-center"
           >
             +
           </button>
         </div>
       </div>
 
-      {/* Les deux boutons stratégiques */}
-      <div className="flex flex-col sm:flex-row gap-3 pt-4">
+      {/* BOUTONS D'ACTION (Pleine largeur sur mobile, fin du bug d'écrasement) */}
+      <div className="flex flex-col gap-3 w-full">
         <button
+          type="button"
           onClick={handleAddToCart}
           disabled={isAdded}
-          className={`flex-1 py-3 px-6 rounded-xl font-bold transition-all duration-300 flex justify-center items-center gap-2 ${
+          className={`w-full h-14 text-sm font-bold uppercase tracking-widest transition-all duration-300 flex justify-center items-center shrink-0 ${
             isAdded 
-              ? 'bg-green-500 text-white shadow-md' 
-              : 'bg-blue-50 text-walmart-blue hover:bg-blue-100 border border-blue-200'
+              ? 'bg-green-600 text-white' 
+              : 'bg-black text-white hover:bg-gray-900'
           }`}
         >
-          {isAdded ? '✓ Ajouté au panier' : '🛒 Ajouter au panier'}
+          {isAdded ? '✓ Ajouté au panier' : 'Ajouter au panier'}
         </button>
 
         <button
+          type="button"
           onClick={handleBuyNow}
-          className="flex-1 bg-walmart-blue hover:bg-blue-700 text-white py-3 px-6 rounded-xl font-bold shadow-md hover:shadow-lg transition-all duration-300"
+          className="w-full h-14 text-sm font-bold uppercase tracking-widest transition-all duration-300 flex justify-center items-center bg-white border-2 border-black text-black hover:bg-gray-50 shrink-0"
         >
-          ⚡ Acheter maintenant
+          Acheter maintenant
         </button>
       </div>
     </div>

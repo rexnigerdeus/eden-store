@@ -5,59 +5,58 @@ export const dynamic = 'force-dynamic'
 
 export default async function AdminSubscriptionsPage() {
   
-  // On récupère les boutiques
   const { data: shops } = await supabaseAdmin
     .from('shops')
     .select('*')
-    .order('subscription_status', { ascending: false }) // Les pending en premier
+    .order('subscription_status', { ascending: false })
 
   const now = new Date()
 
-  // On compte les alertes
   const pendingCount = shops?.filter(s => s.subscription_status === 'pending_verification').length || 0
   const expiredCount = shops?.filter(s => s.subscription_end_date && new Date(s.subscription_end_date) < now).length || 0
 
   return (
-    <div className="max-w-6xl space-y-8">
+    <div className="max-w-[1400px] mx-auto space-y-10">
       
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Abonnements</h1>
-          <p className="text-gray-500 mt-2">Gérez les paiements Wave/Orange Money et prolongez les accès de vos vendeurs.</p>
-        </div>
+      {/* EN-TÊTE */}
+      <div className="border-b border-gray-200 pb-6">
+        <h1 className="text-3xl md:text-5xl font-montserrat font-black text-black uppercase tracking-tight">Abonnements</h1>
+        <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mt-3">Validez les paiements manuels et gérez les accès vendeurs.</p>
       </div>
 
-      {/* KPI Rapides */}
+      {/* KPI RAPIDES */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-          <h3 className="text-gray-500 font-medium mb-2">Vérifications en attente</h3>
-          <p className={`text-3xl font-bold ${pendingCount > 0 ? 'text-orange-600' : 'text-gray-900'}`}>{pendingCount}</p>
+        <div className={`p-6 border-2 border-black ${pendingCount > 0 ? 'bg-red-600 text-white' : 'bg-white text-black'}`}>
+          <h3 className={`text-[10px] font-bold uppercase tracking-widest mb-2 border-b pb-2 ${pendingCount > 0 ? 'border-red-400 text-red-200' : 'border-gray-200 text-gray-400'}`}>
+            Vérifications en attente
+          </h3>
+          <p className="text-3xl font-montserrat font-black">{pendingCount}</p>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-          <h3 className="text-gray-500 font-medium mb-2">Boutiques actives</h3>
-          <p className="text-3xl font-bold text-green-600">
+        <div className="bg-white p-6 border-2 border-black text-black">
+          <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 border-b border-gray-200 pb-2">Boutiques actives</h3>
+          <p className="text-3xl font-montserrat font-black">
             {shops?.filter(s => s.subscription_status === 'active').length || 0}
           </p>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-          <h3 className="text-gray-500 font-medium mb-2">Abonnements expirés</h3>
-          <p className={`text-3xl font-bold ${expiredCount > 0 ? 'text-red-600' : 'text-gray-900'}`}>{expiredCount}</p>
+        <div className="bg-white p-6 border-2 border-black text-black">
+          <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 border-b border-gray-200 pb-2">Abonnements expirés</h3>
+          <p className={`text-3xl font-montserrat font-black ${expiredCount > 0 ? 'text-red-600' : 'text-black'}`}>{expiredCount}</p>
         </div>
       </div>
 
-      {/* Tableau des abonnements */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+      {/* REGISTRE DES ABONNEMENTS */}
+      <div className="bg-white border-2 border-black overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-gray-50 border-b border-gray-200 text-sm text-gray-500 uppercase tracking-wider">
-                <th className="p-4 font-semibold">Boutique & Niveau</th>
-                <th className="p-4 font-semibold">Statut actuel</th>
-                <th className="p-4 font-semibold">Date de fin</th>
-                <th className="p-4 font-semibold">Valider un paiement</th>
+              <tr className="bg-black text-white text-[10px] uppercase tracking-widest font-bold">
+                <th className="p-4 sm:p-6 border-b-2 border-black">Boutique & Niveau</th>
+                <th className="p-4 sm:p-6 border-b-2 border-black">Statut actuel</th>
+                <th className="p-4 sm:p-6 border-b-2 border-black">Date de fin</th>
+                <th className="p-4 sm:p-6 border-b-2 border-black text-right">Validation Paiement</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y-2 divide-black">
               {shops && shops.length > 0 ? (
                 shops.map((shop) => {
                   const endDate = shop.subscription_end_date ? new Date(shop.subscription_end_date) : null
@@ -66,32 +65,40 @@ export default async function AdminSubscriptionsPage() {
                   return (
                     <tr key={shop.id} className="hover:bg-gray-50 transition-colors">
                       
-                      <td className="p-4">
-                        <p className="font-semibold text-gray-900">{shop.name}</p>
-                        <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${shop.subscription_tier === 'partner' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-600'}`}>
+                      <td className="p-4 sm:p-6">
+                        <p className="font-montserrat font-black text-sm text-black uppercase tracking-wider mb-1">{shop.name}</p>
+                        <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 border ${
+                          shop.subscription_tier === 'partner' ? 'bg-black text-white border-black' : 'bg-white text-gray-600 border-gray-300'
+                        }`}>
                           {shop.subscription_tier === 'partner' ? 'Partenaire' : 'Standard'}
                         </span>
                       </td>
 
-                      <td className="p-4">
-                        {shop.subscription_status === 'pending_verification' && <span className="text-orange-600 font-medium text-sm flex items-center gap-1"><span>⏳</span> En attente</span>}
-                        {shop.subscription_status === 'active' && <span className="text-green-600 font-medium text-sm flex items-center gap-1"><span>✅</span> Actif</span>}
-                        {shop.subscription_status === 'unpaid' && <span className="text-red-600 font-medium text-sm">Non payé</span>}
-                        {shop.subscription_status === 'expired' && <span className="text-red-600 font-medium text-sm">Expiré</span>}
+                      <td className="p-4 sm:p-6">
+                        <span className={`text-xs font-black uppercase tracking-widest px-3 py-1.5 border-2 ${
+                          shop.subscription_status === 'pending_verification' ? 'bg-red-50 text-red-600 border-red-600 animate-pulse' :
+                          shop.subscription_status === 'active' ? 'bg-green-50 text-green-600 border-green-600' :
+                          shop.subscription_status === 'unpaid' ? 'bg-white text-gray-500 border-gray-300' :
+                          'bg-red-50 text-red-600 border-red-600'
+                        }`}>
+                          {shop.subscription_status === 'pending_verification' ? 'En attente' :
+                           shop.subscription_status === 'active' ? 'Actif' :
+                           shop.subscription_status === 'unpaid' ? 'Non payé' : 'Expiré'}
+                        </span>
                       </td>
 
-                      <td className="p-4">
+                      <td className="p-4 sm:p-6">
                         {endDate ? (
-                          <span className={`text-sm font-medium ${isExpired ? 'text-red-600' : 'text-gray-900'}`}>
+                          <span className={`text-xs font-bold uppercase tracking-widest ${isExpired ? 'text-red-600' : 'text-black'}`}>
                             {endDate.toLocaleDateString('fr-FR')}
-                            {isExpired && ' (Expiré)'}
+                            {isExpired && ' (EXPIRÉ)'}
                           </span>
                         ) : (
-                          <span className="text-sm text-gray-400 italic">Jamais abonné</span>
+                          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">N/A</span>
                         )}
                       </td>
 
-                      <td className="p-4">
+                      <td className="p-4 sm:p-6 flex justify-end">
                         <SubscriptionControls shopId={shop.id} />
                       </td>
 
@@ -100,7 +107,9 @@ export default async function AdminSubscriptionsPage() {
                 })
               ) : (
                 <tr>
-                  <td colSpan={4} className="p-8 text-center text-gray-500">Aucune boutique trouvée.</td>
+                  <td colSpan={4} className="p-12 text-center text-gray-400 text-xs font-bold uppercase tracking-widest bg-gray-50">
+                    Le registre est vide.
+                  </td>
                 </tr>
               )}
             </tbody>

@@ -1,34 +1,55 @@
 @import "tailwindcss";
 
-/* --- NOTRE THEME WALMART --- */
+/* --- NOUVEAU THEME FASHION / STREETWEAR (Style BoohooMAN) --- */
 @theme {
-  --color-walmart-blue: #0071ce;
-  --color-walmart-darkBlue: #041e42;
-  --color-walmart-yellow: #ffc220;
-  --color-walmart-light: #f2f8fd;
+  /* ASTUCE : On garde les anciens noms de variables (walmart-*) pour ne pas casser 
+    le site existant, mais on change leurs valeurs pour la nouvelle identité !
+  */
+  --color-walmart-blue: #222222;       /* Gris très foncé / Presque noir */
+  --color-walmart-darkBlue: #000000;   /* Noir pur */
+  --color-walmart-yellow: #E50000;     /* Rouge vif (pour les promos et alertes) */
+  --color-walmart-light: #F9FAFB;      /* Gris très clair (pour les fonds) */
+
+  /* Configuration des polices (Inter pour le texte, Montserrat pour les titres) */
+  --font-sans: var(--font-inter), sans-serif;
+  --font-montserrat: var(--font-montserrat), sans-serif;
+
+  /* RÉDUCTION DES ARRONDIS (SHARP EDGES)
+    On écrase les valeurs par défaut de Tailwind. Toutes tes anciennes 
+    classes "rounded-xl" ou "rounded-lg" vont devenir beaucoup plus carrées !
+  */
+  --radius-sm: 0px;
+  --radius: 0px;
+  --radius-md: 0px;
+  --radius-lg: 2px;
+  --radius-xl: 2px;
+  --radius-2xl: 4px;
+  --radius-3xl: 4px;
 }
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --foreground: #000000;
 }
 
 @media (prefers-color-scheme: dark) {
+  /* Pour le style Boohoo, on force souvent le contraste Noir/Blanc */
   :root {
     --background: #0a0a0a;
-    --foreground: #ededed;
+    --foreground: #ffffff;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Styles de base globaux */
+@layer base {
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    @apply antialiased; /* Rend la typographie plus nette et professionnelle */
+  }
+
+  /* Force les champs de formulaire (inputs) à avoir un style brut streetwear */
+  input, textarea, select {
+    @apply border-gray-300 rounded-none focus:ring-1 focus:ring-black focus:border-black outline-none transition-all;
+  }
 }

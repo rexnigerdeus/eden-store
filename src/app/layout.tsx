@@ -1,13 +1,18 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Montserrat } from 'next/font/google'
 import './globals.css'
-import { CartProvider } from '@/context/CartContext' // <-- 1. Import du panier
+import { CartProvider } from '@/context/CartContext' 
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
+const montserrat = Montserrat({ 
+  subsets: ['latin'], 
+  weight: ['500', '700', '800', '900'],
+  variable: '--font-montserrat'
+})
 
 export const metadata: Metadata = {
-  title: 'Eden Store - La Marketplace',
-  description: 'Achetez et vendez facilement',
+  title: 'EDEN store | La Marketplace',
+  description: 'Soutenir. Bâtir. Grandir ensemble.',
 }
 
 export default function RootLayout({
@@ -16,9 +21,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="fr">
-      <body className={inter.className}>
-        {/* <-- 2. On enveloppe l'application avec le CartProvider --> */}
+    <html lang="fr" suppressHydrationWarning>
+      <body className={`${inter.variable} ${montserrat.variable} font-sans bg-white text-black`}>
         <CartProvider>
           {children}
         </CartProvider>

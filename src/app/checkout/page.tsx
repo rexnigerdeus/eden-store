@@ -3,7 +3,7 @@ import CheckoutClient from './CheckoutClient'
 import { createClient } from '@/utils/supabase/server'
 
 export const metadata = {
-  title: 'Caisse - EDEN store',
+  title: 'Validation de commande | ASIM',
 }
 
 export default async function CheckoutPage() {
@@ -17,7 +17,7 @@ export default async function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       <Navbar />
       {/* On envoie le profil, ou "null" si c'est un invité */}
       <CheckoutClient userProfile={profile} />

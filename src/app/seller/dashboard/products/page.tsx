@@ -3,19 +3,13 @@ import { createClient } from '@/utils/supabase/server'
 import ProductActions from './ProductActions'
 
 export default async function ProductsPage() {
-  // 1. Initialiser le client Supabase serveur
   const supabase = await createClient()
-
-  // 2. Récupérer l'utilisateur connecté
   const { data: { user } } = await supabase.auth.getUser()
 
-  // 3. Récupérer les produits du vendeur
   let products: any[] = []
   
   if (user) {
-    // Cette requête récupère les produits liés à la boutique de l'utilisateur
-    // et les trie du plus récent au plus ancien.
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('products')
       .select('*, shops!inner(id)')
       .eq('shops.seller_id', user.id)
@@ -27,76 +21,70 @@ export default async function ProductsPage() {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="max-w-[1400px] mx-auto space-y-8">
       
-      {/* En-tête de la page avec le bouton d'ajout */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
-        <div className="w-full sm:w-auto">
-          <h1 className="text-xl sm:text-2xl font-semibold text-walmart-darkBlue">Mes Produits</h1>
-          <p className="text-sm sm:text-base text-gray-500 mt-1">Gérez votre catalogue d'articles.</p>
+      {/* EN-TÊTE : Minimaliste & Brut */}
+      <div className="border-b border-gray-200 pb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-montserrat font-black text-black uppercase tracking-tight">Catalogue Articles</h1>
+          <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mt-2">Gérez votre inventaire public</p>
         </div>
         
         <Link 
           href="/seller/dashboard/products/new"
-          className="w-full sm:w-auto text-center px-4 py-2 bg-walmart-blue text-white rounded-md hover:bg-blue-700 transition-colors shadow-sm font-medium text-sm sm:text-base"
+          className="w-full sm:w-auto text-center px-6 py-4 bg-red-600 text-white font-montserrat font-black uppercase tracking-widest text-xs hover:bg-red-700 transition-colors"
         >
-          + Nouveau produit
+          + Ajouter un produit
         </Link>
       </div>
       
-      {/* Affichage Conditionnel : Si aucun produit, on montre l'état vide */}
+      {/* ÉTAT VIDE */}
       {products.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 sm:p-12 text-center mt-6 sm:mt-8">
-          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-walmart-light text-walmart-blue rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 text-xl sm:text-2xl shadow-sm">
-            📦
-          </div>
-          <h3 className="text-base sm:text-lg font-medium text-walmart-darkBlue mb-1 sm:mb-2">
-            Aucun produit pour le moment
-          </h3>
-          <p className="text-sm sm:text-base text-gray-500 max-w-sm mx-auto">
-            Votre catalogue est vide. Ajoutez votre premier produit pour commencer à vendre sur EDEN store.
-          </p>
+        <div className="bg-gray-50 p-12 border-2 border-black text-center">
+          <h3 className="text-xl font-montserrat font-black text-black uppercase tracking-widest mb-2">Inventaire vide</h3>
+          <p className="text-xs uppercase tracking-widest text-gray-500">Ajoutez votre premier produit pour commencer à vendre.</p>
         </div>
       ) : (
-        /* Si on a des produits, on affiche la grille */
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-6 sm:mt-8">
+        /* GRILLE DE PRODUITS (Inventaire Strict) */
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {products.map((product) => (
-            <div key={product.id} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow">
+            <div key={product.id} className="bg-white border-2 border-black flex flex-col group relative">
               
-              {/* Affichage de l'image du produit */}
-              <div className="h-40 sm:h-48 bg-gray-100 border-b border-gray-100 relative group overflow-hidden">
+              {/* Image du produit */}
+              <div className="aspect-[3/4] bg-gray-100 relative overflow-hidden border-b-2 border-black">
                 {product.cover_image_url ? (
-                  /* Note: On utilise une balise <img> standard ici pour la simplicité. 
-                     En production, Next.js recommande <Image> mais cela nécessite une config supplémentaire. */
                   <img 
                     src={product.cover_image_url} 
                     alt={product.title} 
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <span className="text-3xl sm:text-4xl">📷</span>
+                  <div className="w-full h-full flex items-center justify-center text-xl font-montserrat font-black uppercase text-gray-300">
+                    ASIM
                   </div>
                 )}
-                {/* Nos vrais boutons d'action interactifs avec la gestion du stock */}
-                  <ProductActions productId={product.id} isAvailable={product.is_available} />
+                
+                {/* Badge Statut (Stock) */}
+                <div className={`absolute top-0 left-0 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest border-r-2 border-b-2 border-black ${product.is_available ? 'bg-white text-black' : 'bg-red-600 text-white'}`}>
+                  {product.is_available ? 'En ligne' : 'Rupture'}
+                </div>
               </div>
 
-              {/* Informations du produit */}
-              <div className="p-4 sm:p-5 flex-1 flex flex-col">
-                <h3 className="text-base sm:text-lg font-semibold text-walmart-darkBlue truncate" title={product.title}>
+              {/* Infos Produit */}
+              <div className="p-4 flex flex-col flex-1">
+                <h3 className="text-sm font-montserrat font-black text-black uppercase tracking-wide truncate mb-1">
                   {product.title}
                 </h3>
-                <p className="text-gray-500 text-xs sm:text-sm mt-1 line-clamp-2 flex-1">
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest line-clamp-2 mb-4">
                   {product.description}
                 </p>
                 
-                <div className="mt-3 sm:mt-4 flex items-center justify-between gap-2">
-                  <span className="text-lg sm:text-xl font-bold text-walmart-blue">
-                    {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'XOF' }).format(product.price)}
+                <div className="mt-auto border-t border-gray-100 pt-3 flex flex-col gap-3">
+                  <span className="text-lg font-montserrat font-black text-black">
+                    {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'XOF', maximumFractionDigits: 0 }).format(product.price)}
                   </span>
                   
-                  {/* Boutons d'action (Modifier / Supprimer) */}
+                  {/* Nos boutons d'action interactifs stylisés */}
                   <ProductActions productId={product.id} isAvailable={product.is_available} />
                 </div>
               </div>

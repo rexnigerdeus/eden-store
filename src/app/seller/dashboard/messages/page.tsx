@@ -14,7 +14,7 @@ export default async function SellerInboxPage() {
 
   let conversations = []
 
-  // 2. Récupérer toutes les conversations de cette boutique (en incluant is_read)
+  // 2. Récupérer toutes les conversations
   if (shop) {
     const { data } = await supabase
       .from('conversations')
@@ -29,10 +29,7 @@ export default async function SellerInboxPage() {
       
     if (data) {
       conversations = data.map((conv: any) => {
-        // Trier les messages
         const sortedMessages = conv.messages.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-        
-        // 🔥 Compter les messages non lus (reçus du client) 🔥
         const unreadCount = conv.messages.filter((m: any) => !m.is_read && m.sender_id !== user.id).length
 
         return {
@@ -45,57 +42,61 @@ export default async function SellerInboxPage() {
   }
 
   return (
-    <div className="max-w-4xl space-y-4 sm:space-y-6">
-      <div>
-        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Boîte de réception</h1>
-        <p className="text-sm sm:text-base text-gray-500 mt-1">Échangez avec vos clients et répondez à leurs questions.</p>
+    <div className="max-w-[1000px] mx-auto space-y-8">
+      
+      {/* EN-TÊTE */}
+      <div className="border-b border-gray-200 pb-6">
+        <h1 className="text-3xl font-montserrat font-black text-black uppercase tracking-tight">Boîte de réception</h1>
+        <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mt-2">Échangez avec vos clients et répondez à leurs questions.</p>
       </div>
 
-      <div className="bg-white rounded-xl sm:rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="bg-white border-2 border-black overflow-hidden">
         {conversations.length === 0 ? (
-          <div className="p-6 sm:p-12 text-center text-gray-500">
-            <span className="text-4xl sm:text-5xl mb-3 sm:mb-4 block">💬</span>
-            <p className="text-sm sm:text-base">Aucun message pour le moment.</p>
+          <div className="p-12 md:p-20 text-center bg-gray-50">
+            <h3 className="text-xl md:text-2xl font-montserrat font-black text-black uppercase tracking-widest mb-2">Aucun Message</h3>
+            <p className="text-xs uppercase tracking-widest text-gray-500">Votre messagerie est vide pour le moment.</p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y-2 divide-black">
             {conversations.map((conv: any) => (
               <Link 
                 key={conv.id} 
                 href={`/seller/dashboard/messages/${conv.id}`}
-                className="block p-3 sm:p-4 hover:bg-gray-50 transition-colors"
+                className="block p-4 sm:p-6 bg-white hover:bg-gray-50 transition-colors"
               >
-                <div className="flex items-center space-x-3 sm:space-x-4">
-                  {/* Avatar Client */}
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-walmart-light text-walmart-blue rounded-full flex items-center justify-center font-bold text-base sm:text-lg flex-shrink-0">
+                <div className="flex items-center space-x-4 sm:space-x-6">
+                  
+                  {/* Avatar Client Brutaliste */}
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 bg-black text-white flex items-center justify-center font-montserrat font-black text-xl flex-shrink-0 border-2 border-black">
                     {conv.profiles?.full_name?.charAt(0).toUpperCase() || 'C'}
                   </div>
                   
                   {/* Aperçu du message */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-baseline mb-1">
-                      <h3 className={`text-sm sm:text-base truncate ${conv.unreadCount > 0 ? 'font-bold text-gray-900' : 'font-semibold text-gray-700'}`}>
+                    <div className="flex justify-between items-baseline mb-2">
+                      <h3 className={`text-sm md:text-base uppercase tracking-widest truncate ${conv.unreadCount > 0 ? 'font-montserrat font-black text-black' : 'font-bold text-gray-600'}`}>
                         {conv.profiles?.full_name || 'Client Inconnu'}
                       </h3>
-                      <span className="text-[10px] sm:text-xs text-gray-400 whitespace-nowrap ml-2">
+                      <span className="text-[10px] font-bold sm:text-xs text-gray-400 uppercase tracking-widest whitespace-nowrap ml-2">
                         {conv.lastMessage ? new Date(conv.lastMessage.created_at).toLocaleDateString('fr-FR') : ''}
                       </span>
                     </div>
                     
-                    <div className="flex items-center justify-between">
-                      <p className={`text-xs sm:text-sm truncate pr-2 sm:pr-4 ${conv.unreadCount > 0 ? 'font-medium text-gray-900' : 'text-gray-500'}`}>
+                    <div className="flex items-center justify-between gap-4">
+                      <p className={`text-xs sm:text-sm truncate ${conv.unreadCount > 0 ? 'font-bold text-black' : 'text-gray-500'}`}>
                         {conv.lastMessage?.sender_id === user.id ? 'Vous: ' : ''}
                         {conv.lastMessage?.content || 'Nouvelle conversation'}
                       </p>
                       
-                      {/* 🔥 LA PASTILLE ROUGE POUR LE VENDEUR 🔥 */}
+                      {/* Pastille de notification (Carrée et agressive) */}
                       {conv.unreadCount > 0 && (
-                        <span className="bg-red-500 text-white text-[10px] sm:text-xs font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full flex-shrink-0">
-                          {conv.unreadCount}
+                        <span className="bg-red-600 text-white text-[10px] font-black uppercase tracking-widest px-2 py-1 shrink-0 border border-red-600">
+                          {conv.unreadCount} NOUVEAU{conv.unreadCount > 1 ? 'X' : ''}
                         </span>
                       )}
                     </div>
                   </div>
+
                 </div>
               </Link>
             ))}

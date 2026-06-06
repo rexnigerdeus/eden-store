@@ -1,5 +1,5 @@
 import { createClient } from '@/utils/supabase/server'
-import ShopForm from './ShopForm' // Import du nouveau composant
+import ShopForm from './ShopForm' 
 
 export default async function SettingsPage() {
   const supabase = await createClient()
@@ -13,23 +13,18 @@ export default async function SettingsPage() {
   }
 
   return (
-    <div className="max-w-3xl space-y-4 sm:space-y-6">
-      <div>
-        <h1 className="text-xl sm:text-2xl font-semibold text-walmart-darkBlue">Ma Boutique</h1>
-        <p className="text-sm sm:text-base text-gray-500 mt-1">Personnalisez l'apparence et les informations de votre vitrine publique.</p>
+    <div className="max-w-[1000px] mx-auto space-y-8">
+      
+      {/* EN-TÊTE BRUTALISTE */}
+      <div className="border-b border-gray-200 pb-6">
+        <h1 className="text-3xl font-montserrat font-black text-black uppercase tracking-tight">Configuration Boutique</h1>
+        <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mt-2">Gérez votre identité et votre vitrine publique</p>
       </div>
 
-      <div className="bg-white p-4 sm:p-8 rounded-xl border border-gray-100 shadow-sm space-y-6 sm:space-y-8">
-        <section>
-          <h2 className="text-base sm:text-lg font-medium text-walmart-darkBlue border-b border-gray-100 pb-2 mb-3 sm:mb-4">
-            Identité de la boutique
-          </h2>
-          
-          {/* On appelle le formulaire interactif ici */}
-          <ShopForm shop={shop} />
-
-        </section>
+      <div className="bg-white">
+        <ShopForm shop={shop} />
       </div>
+      
     </div>
   )
 }

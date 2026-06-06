@@ -16,22 +16,22 @@ export default function SubscriptionControls({ shopId }: { shopId: string }) {
   }
 
   return (
-    <div className="flex space-x-2">
+    <div className="flex flex-col sm:flex-row gap-2">
       <button 
         onClick={() => handleExtend('monthly')}
         disabled={isUpdating}
-        className="px-3 py-1.5 text-xs font-semibold rounded-md bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors border border-blue-200 disabled:opacity-50"
+        className="px-4 py-2 text-[10px] font-black uppercase tracking-widest border-2 bg-white text-black border-black hover:bg-black hover:text-white transition-colors disabled:opacity-50 shrink-0"
         title="Ajouter 1 mois"
       >
-        + 1 Mois
+        + 1 MOIS
       </button>
       <button 
         onClick={() => handleExtend('annual')}
         disabled={isUpdating}
-        className="px-3 py-1.5 text-xs font-semibold rounded-md bg-walmart-yellow text-walmart-darkBlue hover:bg-yellow-400 transition-colors shadow-sm disabled:opacity-50"
+        className="px-4 py-2 text-[10px] font-black uppercase tracking-widest border-2 bg-black text-white border-black hover:bg-gray-800 transition-colors disabled:opacity-50 shrink-0"
         title="Ajouter 1 an"
       >
-        + 1 An
+        + 1 AN
       </button>
     </div>
   )
