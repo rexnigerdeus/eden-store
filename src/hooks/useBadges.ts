@@ -9,10 +9,11 @@ import { createClient } from '@/utils/supabase/client'
 export function useSellerBadges(shopId: string | null, userId: string | null) {
   const [pendingOrders, setPendingOrders] = useState(0)
   const [unreadMessages, setUnreadMessages] = useState(0)
-  const supabase = createClient()
 
   useEffect(() => {
     if (!shopId || !userId) return
+
+    const supabase = createClient()
 
     // Fonction pour charger les totaux initiaux
     const fetchCounts = async () => {
@@ -42,8 +43,11 @@ export function useSellerBadges(shopId: string | null, userId: string | null) {
 
     fetchCounts()
 
+    // CORRECTION : Création d'un nom de canal unique pour éviter les conflits de rechargement
+    const uniqueChannelName = `seller_badges_${shopId}_${Date.now()}`
+
     // Écoute des changements en temps réel
-    const channel = supabase.channel('seller_badges')
+    const channel = supabase.channel(uniqueChannelName)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders', filter: `shop_id=eq.${shopId}` }, () => {
         setPendingOrders(prev => prev + 1)
       })
@@ -57,8 +61,11 @@ export function useSellerBadges(shopId: string | null, userId: string | null) {
       })
       .subscribe()
 
-    return () => { supabase.removeChannel(channel) }
-  }, [shopId, userId, supabase])
+    // Nettoyage à la destruction du composant
+    return () => { 
+      supabase.removeChannel(channel) 
+    }
+  }, [shopId, userId]) // Retrait de 'supabase' des dépendances pour éviter les re-rendus inutiles
 
   return { pendingOrders, unreadMessages }
 }
@@ -68,9 +75,10 @@ export function useSellerBadges(shopId: string | null, userId: string | null) {
 // ==========================================
 export function useAdminBadges() {
   const [pendingShops, setPendingShops] = useState(0)
-  const supabase = createClient()
 
   useEffect(() => {
+    const supabase = createClient()
+
     const fetchCounts = async () => {
       const { count } = await supabase
         .from('shops')
@@ -81,14 +89,18 @@ export function useAdminBadges() {
 
     fetchCounts()
 
-    const channel = supabase.channel('admin_badges')
+    const uniqueChannelName = `admin_badges_${Date.now()}`
+
+    const channel = supabase.channel(uniqueChannelName)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'shops' }, () => {
         fetchCounts() // Recharger dès qu'une boutique est modifiée
       })
       .subscribe()
 
-    return () => { supabase.removeChannel(channel) }
-  }, [supabase])
+    return () => { 
+      supabase.removeChannel(channel) 
+    }
+  }, [])
 
   return { pendingShops }
 }
@@ -98,10 +110,11 @@ export function useAdminBadges() {
 // ==========================================
 export function useClientBadges(userId: string | null) {
   const [unreadMessages, setUnreadMessages] = useState(0)
-  const supabase = createClient()
 
   useEffect(() => {
     if (!userId) return
+    
+    const supabase = createClient()
 
     const fetchCounts = async () => {
       const { data: conversations } = await supabase.from('conversations').select('id').eq('customer_id', userId)
@@ -121,7 +134,9 @@ export function useClientBadges(userId: string | null) {
 
     fetchCounts()
 
-    const channel = supabase.channel('client_badges')
+    const uniqueChannelName = `client_badges_${userId}_${Date.now()}`
+
+    const channel = supabase.channel(uniqueChannelName)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
         if (payload.new.sender_id !== userId) setUnreadMessages(prev => prev + 1)
       })
@@ -130,8 +145,10 @@ export function useClientBadges(userId: string | null) {
       })
       .subscribe()
 
-    return () => { supabase.removeChannel(channel) }
-  }, [userId, supabase])
+    return () => { 
+      supabase.removeChannel(channel) 
+    }
+  }, [userId])
 
   return { unreadMessages }
 }
