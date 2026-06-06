@@ -1,14 +1,15 @@
+'use client'
+
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
 import { signup } from '../auth/actions'
+import PasswordInput from '@/components/PasswordInput'
 
-export default async function SignupPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ message?: string }>
-}) {
+function SignupForm() {
+  const searchParams = useSearchParams()
+  const message = searchParams.get('message') || ''
 
-  const resolvedParams = await searchParams
-  
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-white p-4 sm:p-6 lg:p-8">
       <div className="w-full max-w-md space-y-6 sm:space-y-8">
@@ -22,9 +23,9 @@ export default async function SignupPage({
         </div>
 
         {/* Affichage des messages d'erreur éventuels */}
-        {resolvedParams.message && (
+        {message && (
           <div className="p-3 sm:p-4 text-xs sm:text-sm text-red-700 bg-red-50 rounded-md text-center">
-            {resolvedParams.message}
+            {message}
           </div>
         )}
 
@@ -48,13 +49,12 @@ export default async function SignupPage({
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
                 Mot de passe
               </label>
-              <input
+              <PasswordInput
                 id="password"
                 name="password"
-                type="password"
                 required
-                className="w-full px-3 py-2.5 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 rounded-lg focus:ring-1 focus:ring-black focus:border-black transition-colors outline-none text-gray-900"
                 placeholder="••••••••"
+                inputClassName="focus:ring-1 focus:ring-black focus:border-black transition-colors"
               />
             </div>
           </div>
@@ -75,5 +75,13 @@ export default async function SignupPage({
         </p>
       </div>
     </div>
+  )
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={null}>
+      <SignupForm />
+    </Suspense>
   )
 }

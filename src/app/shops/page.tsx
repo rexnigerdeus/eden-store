@@ -11,9 +11,14 @@ export default async function AllShopsPage({
   const resolvedParams = await searchParams
   const searchQuery = resolvedParams.q || ''
 
+  // LA SÉCURITÉ PUBLIQUE : On ne montre que les abonnements VALIDES !
+  const nowISO = new Date().toISOString()
+
   let query = supabase
     .from('shops')
     .select('id, name, slug, logo_url, expertise, delivery_locations')
+    .eq('subscription_status', 'active')
+    .gte('subscription_end_date', nowISO) // <-- La date doit être supérieure à aujourd'hui
     .order('name', { ascending: true })
 
   if (searchQuery) {
@@ -23,10 +28,9 @@ export default async function AllShopsPage({
   const { data: shops } = await query
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white font-sans">
       <Navbar />
 
-      {/* EN-TÊTE ET RECHERCHE */}
       <div className="bg-gray-50 border-b border-gray-200 py-12 md:py-20 text-center px-4">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-montserrat font-black text-black uppercase tracking-tight mb-4">
@@ -62,15 +66,12 @@ export default async function AllShopsPage({
         </div>
       </div>
 
-      {/* GRILLE DES RÉSULTATS */}
       <main className="max-w-[1600px] mx-auto px-4 sm:px-6 py-12 md:py-16">
         {shops && shops.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
             {shops.map((shop) => (
-              <Link key={shop.id} href={`/shop/${shop.slug}`} className="group flex flex-col bg-white border border-gray-200 hover:border-black transition-colors p-8 items-center text-center">
-                
-                {/* Logo (Maintenant Carré) */}
-                <div className="w-24 h-24 bg-gray-100 border border-gray-200 mb-6 overflow-hidden flex-shrink-0">
+              <Link key={shop.id} href={`/shop/${shop.slug}`} className="group flex flex-col bg-white border-2 border-black hover:border-red-600 transition-colors p-8 items-center text-center">
+                <div className="w-24 h-24 bg-gray-100 border-2 border-black mb-6 overflow-hidden flex-shrink-0">
                   {shop.logo_url ? (
                     <img src={shop.logo_url} alt={shop.name} className="w-full h-full object-cover grayscale-[50%] group-hover:grayscale-0 transition-all duration-500" />
                   ) : (
@@ -86,7 +87,7 @@ export default async function AllShopsPage({
                   <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-4 line-clamp-2">{shop.expertise}</p>
                 )}
                 
-                <div className="mt-auto pt-4 border-t border-gray-100 w-full text-center">
+                <div className="mt-auto pt-4 border-t border-gray-200 w-full text-center">
                   <span className="text-xs font-bold text-black uppercase tracking-widest group-hover:text-red-600 transition-colors">
                     Explorer &rarr;
                   </span>
@@ -95,9 +96,9 @@ export default async function AllShopsPage({
             ))}
           </div>
         ) : (
-          <div className="text-center py-20 md:py-32 bg-gray-50 border border-gray-200">
+          <div className="text-center py-20 md:py-32 bg-gray-50 border-2 border-black">
             <h3 className="text-2xl md:text-3xl font-montserrat font-black text-black uppercase tracking-tight mb-4">Aucune marque trouvée</h3>
-            <p className="text-sm md:text-base text-gray-500 uppercase tracking-widest mb-8">Essayez de modifier vos termes de recherche.</p>
+            <p className="text-sm md:text-base text-gray-500 uppercase tracking-widest mb-8">Il n'y a pas de boutiques avec cet abonnement valide.</p>
             {searchQuery && (
               <Link href="/shops" className="inline-block px-10 py-4 bg-black text-white text-sm font-bold uppercase tracking-widest hover:bg-gray-900 transition-colors border-2 border-black">
                 Voir toutes les marques

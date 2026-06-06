@@ -10,7 +10,6 @@ export async function updateShopSettings(formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error("Utilisateur non connecté")
 
-  // On récupère le nom obligatoirement
   const name = formData.get('name') as string
   if (!name) return { error: "Le nom de la boutique est requis." }
 
@@ -31,77 +30,69 @@ export async function updateShopSettings(formData: FormData) {
     tiktok: formData.get('tiktok') as string,
   }
 
-  // Nettoyage des champs vides
   Object.keys(updates).forEach(key => updates[key] == null && delete updates[key])
 
-  // 3. Fonction utilitaire pour uploader une image
-  async function uploadImage(file: File | null, folderName: string) {
-    if (file && file.size > 0) {
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${folderName}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
-      
-      const { error } = await supabase.storage.from('shop-assets').upload(fileName, file)
-      if (!error) {
-        const { data: { publicUrl } } = supabase.storage.from('shop-assets').getPublicUrl(fileName)
-        return publicUrl
-      }
-      console.error(`Erreur upload ${folderName}:`, error)
+  // 3. Upload des images
+  // NOTE: les logos / bannières des boutiques sont stockés dans le bucket
+  // "shop-assets" (le bucket "shops" n'existe pas dans le projet Supabase).
+  // NOTE: n'utiliser que [A-Za-z0-9-_] dans le nom de fichier.
+  // `Math.random()` produit "0.4829..." qui contient un point, ce que
+  // Supabase Storage interprète comme un séparateur d'extension et fait
+  // échouer l'upload. On utilise crypto.randomUUID() à la place.
+  const sanitizeExt = (ext: string) => ext.toLowerCase().replace(/[^a-z0-9]/g, '') || 'bin'
+  const SHOP_BUCKET = 'shop-assets'
+
+  const logoFile = formData.get('logo') as File
+  if (logoFile && logoFile.size > 0) {
+    const fileExt = sanitizeExt(logoFile.name.split('.').pop() || '')
+    const fileName = `${user.id}/logo-${crypto.randomUUID()}.${fileExt}`
+    const { error: uploadError } = await supabase.storage.from(SHOP_BUCKET).upload(fileName, logoFile, { upsert: false })
+    if (uploadError) {
+      console.error('[shop-logo-upload]', uploadError)
+      return { error: `Erreur lors de l'upload du logo : ${uploadError.message}` }
     }
-    return null
+    const { data: { publicUrl: logoUrl } } = supabase.storage.from(SHOP_BUCKET).getPublicUrl(fileName)
+    updates.logo_url = logoUrl
   }
 
-  // 4. Traitement des fichiers (Logo et Bannière)
-  const logoFile = formData.get('logo') as File
   const bannerFile = formData.get('banner') as File
+  if (bannerFile && bannerFile.size > 0) {
+    const fileExt = sanitizeExt(bannerFile.name.split('.').pop() || '')
+    const fileName = `${user.id}/banner-${crypto.randomUUID()}.${fileExt}`
+    const { error: uploadError } = await supabase.storage.from(SHOP_BUCKET).upload(fileName, bannerFile, { upsert: false })
+    if (uploadError) {
+      console.error('[shop-banner-upload]', uploadError)
+      return { error: `Erreur lors de l'upload de la bannière : ${uploadError.message}` }
+    }
+    const { data: { publicUrl: bannerUrl } } = supabase.storage.from(SHOP_BUCKET).getPublicUrl(fileName)
+    updates.banner_url = bannerUrl
+  }
 
-  const logoUrl = await uploadImage(logoFile, 'logos')
-  if (logoUrl) updates.logo_url = logoUrl
-
-  const bannerUrl = await uploadImage(bannerFile, 'banners')
-  if (bannerUrl) updates.banner_url = bannerUrl
-
-  // 5. VÉRIFICATION : Le vendeur a-t-il déjà une boutique ?
-  // On utilise maybeSingle() pour ne pas déclencher d'erreur si la boutique n'existe pas
-  const { data: existingShop } = await supabase
-    .from('shops')
-    .select('id')
-    .eq('seller_id', user.id)
-    .maybeSingle()
+  const { data: existingShop } = await supabase.from('shops').select('id').eq('seller_id', user.id).maybeSingle()
 
   if (existingShop) {
-    // ---> CAS A : LA BOUTIQUE EXISTE, ON MET À JOUR (UPDATE)
-    const { error } = await supabase
-      .from('shops')
-      .update(updates)
-      .eq('seller_id', user.id)
-
-    if (error) {
-      console.error("Erreur de mise à jour:", error)
-      return { error: "Impossible de mettre à jour la boutique." }
-    }
+    // MISE À JOUR
+    const { error } = await supabase.from('shops').update(updates).eq('seller_id', user.id)
+    if (error) return { error: "Impossible de mettre à jour la boutique." }
   } else {
-    // ---> CAS B : PREMIÈRE VISITE, ON CRÉE LA BOUTIQUE (INSERT)
-    // On génère le slug proprement
+    // CRÉATION AVEC 14 JOURS D'ESSAI
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
+    
+    const trialEndDate = new Date()
+    trialEndDate.setDate(trialEndDate.getDate() + 14)
 
-    const { error } = await supabase
-      .from('shops')
-      .insert({
-        ...updates,
-        seller_id: user.id, // Lien avec le vendeur
-        slug: slug
-      })
+    const { error } = await supabase.from('shops').insert({
+      ...updates,
+      seller_id: user.id,
+      slug: slug,
+      subscription_status: 'active',
+      subscription_tier: 'standard',
+      subscription_end_date: trialEndDate.toISOString()
+    })
 
-    if (error) {
-      console.error("Erreur de création:", error)
-      return { error: "Impossible de créer la boutique. Ce nom est peut-être déjà pris." }
-    }
+    if (error) return { error: "Impossible de créer la boutique. Ce nom est peut-être déjà pris." }
   }
 
-  // 6. Rafraîchissement du cache
   revalidatePath('/seller/dashboard/settings')
-  revalidatePath('/seller/dashboard', 'layout')
-  revalidatePath('/shop/[slug]', 'page') 
-  
-  return { success: existingShop ? "Boutique mise à jour avec succès !" : "Félicitations, votre boutique est créée !" }
+  return { success: "Boutique enregistrée avec succès !" }
 }

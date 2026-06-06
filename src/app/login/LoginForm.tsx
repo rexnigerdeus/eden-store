@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { loginBuyer } from '../auth/actions'
+import PasswordInput from '@/components/PasswordInput'
 
 export default function LoginForm() {
   const [isPending, setIsPending] = useState(false)
@@ -42,7 +43,7 @@ export default function LoginForm() {
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">Mot de passe</label>
             <Link href="#" className="text-xs font-medium text-walmart-blue hover:underline">Oublié ?</Link>
           </div>
-          <input id="password" name="password" type="password" required placeholder="••••••••" className="w-full px-3 py-2.5 sm:px-4 sm:py-3 text-sm sm:text-base text-gray-900 border border-gray-200 rounded-lg focus:ring-2 focus:ring-walmart-blue outline-none" />
+          <PasswordInput id="password" name="password" required placeholder="••••••••" />
         </div>
 
         <button type="submit" disabled={isPending} className={`w-full py-3 sm:py-4 text-white font-bold text-base sm:text-lg rounded-xl transition-colors shadow-sm mt-2 ${isPending ? 'bg-blue-400 cursor-not-allowed' : 'bg-walmart-blue hover:bg-blue-700'}`}>

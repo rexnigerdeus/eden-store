@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useCart } from '@/context/CartContext'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
+import LiveOnlineCounter from './LiveOnlineCounter'
 
 export default function Navbar() {
   const { cart } = useCart()
@@ -37,10 +38,8 @@ export default function Navbar() {
   return (
     <header className="w-full sticky top-0 z-50 bg-white shadow-sm">
       
-      {/* 1. BARRE DE PROMOTION (Noire, texte défilant ou centré) */}
-      <div className="bg-black text-white text-xs font-bold text-center py-2 uppercase tracking-[0.2em] w-full">
-        Jusqu'à -50% sur tout ! Code: <span className="text-red-500">ASIM50</span>
-      </div>
+      {/* 1. BARRE D'ANNONCE — Compteur de connectés en temps réel */}
+      <LiveOnlineCounter />
 
       {/* 2. NAVIGATION PRINCIPALE */}
       <div className="border-b border-gray-200">
@@ -69,6 +68,15 @@ export default function Navbar() {
               <Link href="/category/accessoires" className="text-black hover:text-red-600 transition-colors uppercase">Accessoires</Link>
               <Link href="/shops" className="text-gray-500 hover:text-black transition-colors uppercase">Boutiques</Link>
             </nav>
+
+            {/* CTA Vendeur (Desktop) */}
+            <Link
+              href="/seller/signup"
+              className="hidden md:inline-flex items-center gap-2 px-4 py-2 border-2 border-black bg-white text-black text-[11px] font-montserrat font-black uppercase tracking-widest hover:bg-black hover:text-white transition-colors rounded-none"
+            >
+              <span aria-hidden="true">＋</span>
+              Créer un compte vendeur
+            </Link>
           </div>
 
           {/* CENTRE : LOGO (Imposant et centré sur desktop) */}
@@ -147,6 +155,16 @@ export default function Navbar() {
                 className="text-black hover:text-gray-600 transition-colors uppercase sm:hidden"
               >
                 {user ? 'Mon compte' : 'Se connecter'}
+              </Link>
+
+              {/* CTA Vendeur (Mobile) — bouton plein, bien visible */}
+              <Link
+                href="/seller/signup"
+                onClick={() => setMobileMenuOpen(false)}
+                className="mt-2 flex items-center justify-center gap-2 px-4 py-3 border-2 border-black bg-black text-white text-xs font-montserrat font-black uppercase tracking-widest hover:bg-gray-900 transition-colors rounded-none"
+              >
+                <span aria-hidden="true">＋</span>
+                Créer un compte vendeur
               </Link>
             </div>
           </nav>

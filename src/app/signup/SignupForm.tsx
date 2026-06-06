@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { signupBuyer } from '../auth/actions'
+import PasswordInput from '@/components/PasswordInput'
 
 export default function SignupForm() {
   const [isPending, setIsPending] = useState(false)
@@ -34,7 +35,7 @@ export default function SignupForm() {
       <form action={onSubmit} className="space-y-4 sm:space-y-5">
         <div>
           <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">Nom complet</label>
-          <input id="fullName" name="fullName" type="text" required placeholder="Ex: Jean Dupont" className="w-full px-3 py-2.5 sm:px-4 sm:py-3 text-sm sm:text-base text-gray-900 border border-gray-200 rounded-lg focus:ring-2 focus:ring-walmart-blue outline-none" />
+          <input id="fullName" name="fullName" type="text" required placeholder="Ex: Aliou Traoré" className="w-full px-3 py-2.5 sm:px-4 sm:py-3 text-sm sm:text-base text-gray-900 border border-gray-200 rounded-lg focus:ring-2 focus:ring-walmart-blue outline-none" />
         </div>
 
         <div>
@@ -44,7 +45,7 @@ export default function SignupForm() {
 
         <div>
           <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
-          <input id="password" name="password" type="password" required placeholder="••••••••" minLength={6} className="w-full px-3 py-2.5 sm:px-4 sm:py-3 text-sm sm:text-base text-gray-900 border border-gray-200 rounded-lg focus:ring-2 focus:ring-walmart-blue outline-none" />
+          <PasswordInput id="password" name="password" required placeholder="••••••••" minLength={6} />
           <p className="text-xs text-gray-500 mt-1">6 caractères minimum.</p>
         </div>
 

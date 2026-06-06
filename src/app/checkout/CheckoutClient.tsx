@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { placeOrder } from './actions'
 import Link from 'next/link'
+import PasswordInput from '@/components/PasswordInput'
 
 export default function CheckoutClient({ userProfile }: { userProfile: any }) {
   const { cart, cartTotal, clearCart } = useCart()
@@ -138,7 +139,12 @@ export default function CheckoutClient({ userProfile }: { userProfile: any }) {
                 <p className="text-xs text-gray-500 mb-6 uppercase tracking-wider">Suivez vos commandes plus rapidement la prochaine fois.</p>
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Mot de passe</label>
-                  <input name="password" type="password" className={inputClasses} placeholder="Minimum 6 caractères" minLength={6} />
+                  <PasswordInput
+                    name="password"
+                    placeholder="Minimum 6 caractères"
+                    minLength={6}
+                    inputClassName="p-4 border-2 border-gray-300 focus:border-black"
+                  />
                 </div>
               </div>
             )}
