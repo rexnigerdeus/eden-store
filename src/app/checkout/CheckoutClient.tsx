@@ -7,19 +7,20 @@ import { placeOrder } from './actions'
 import Link from 'next/link'
 import PasswordInput from '@/components/PasswordInput'
 
-export default function CheckoutClient({ userProfile }: { userProfile: any }) {
+export default function CheckoutClient({ userProfile, userEmail }: { userProfile: any, userEmail: string | null }) {
   const { cart, cartTotal, clearCart } = useCart()
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [mounted, setMounted] = useState(false)
-  
+  const [formError, setFormError] = useState<string | null>(null)
+
   // Pour stocker les commandes validées des invités
   const [successOrders, setSuccessOrders] = useState<{id: string, shop_name: string}[] | null>(null)
 
   useEffect(() => { setMounted(true) }, [])
 
   if (!mounted) return null
-  
+
   // Si le panier est vide et qu'on n'est pas sur l'écran de succès
   if (cart.length === 0 && !successOrders) {
     router.push('/cart')
@@ -29,6 +30,7 @@ export default function CheckoutClient({ userProfile }: { userProfile: any }) {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsSubmitting(true)
+    setFormError(null)
 
     const formData = new FormData(e.currentTarget)
     const shippingData = {
@@ -52,8 +54,10 @@ export default function CheckoutClient({ userProfile }: { userProfile: any }) {
         setSuccessOrders(result.createdOrders || [])
       }
     } else {
-      alert(result.error)
+      setFormError(result.error || "Une erreur est survenue.")
       setIsSubmitting(false)
+      // Scroll vers le haut pour voir l'erreur
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   }
 
@@ -98,6 +102,13 @@ export default function CheckoutClient({ userProfile }: { userProfile: any }) {
         Validation
       </h1>
 
+      {formError && (
+        <div className="mb-8 p-4 border-2 border-red-600 bg-red-50 text-sm font-bold text-red-700 uppercase tracking-widest flex items-start gap-3">
+          <span className="text-xl shrink-0">⚠️</span>
+          <span>{formError}</span>
+        </div>
+      )}
+
       <div className="flex flex-col lg:flex-row gap-12 lg:gap-20">
         
         {/* COLONNE GAUCHE : Formulaire de livraison */}
@@ -108,11 +119,24 @@ export default function CheckoutClient({ userProfile }: { userProfile: any }) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Nom complet *</label>
-                <input required name="full_name" type="text" defaultValue={userProfile?.full_name || ''} className={inputClasses} placeholder="Ex: Jean Dupont" />
+                <input required name="full_name" type="text" defaultValue={userProfile?.full_name || ''} className={inputClasses} placeholder="Ex: Jean Dupont" readOnly={!!userProfile} />
               </div>
               <div>
                 <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Email *</label>
-                <input required name="email" type="email" className={inputClasses} placeholder="jean@email.com" />
+                <input
+                  required
+                  name="email"
+                  type="email"
+                  defaultValue={userEmail || userProfile?.email || ''}
+                  readOnly={!!userEmail}
+                  className={`${inputClasses} ${userEmail ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''}`}
+                  placeholder="jean@email.com"
+                />
+                {userEmail && (
+                  <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-widest font-bold">
+                    Connecté avec votre compte
+                  </p>
+                )}
               </div>
             </div>
 
@@ -131,6 +155,13 @@ export default function CheckoutClient({ userProfile }: { userProfile: any }) {
               <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Adresse précise *</label>
               <input required name="address" type="text" defaultValue={userProfile?.address || ''} className={inputClasses} placeholder="Quartier, Rue, Bâtiment..." />
             </div>
+
+            {/* INDICATION UTILE : si le profil est vide, on aide l'utilisateur */}
+            {userProfile && (!userProfile.address || !userProfile.city) && (
+              <div className="p-3 border border-gray-200 bg-gray-50 text-xs text-gray-600 uppercase tracking-widest">
+                💡 Vous n'avez pas encore renseigné votre adresse ? Complétez-la ci-dessous pour la prochaine fois.
+              </div>
+            )}
 
             {/* SECTION CRÉATION DE COMPTE OPTIONNELLE */}
             {!userProfile && (

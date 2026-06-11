@@ -8,7 +8,7 @@ import { useSellerBadges } from '@/hooks/useBadges'
 
 export default function NavLinks({ onLinkClick }: { onLinkClick?: () => void }) {
   const pathname = usePathname()
-  
+
   const [userId, setUserId] = useState<string | null>(null)
   const [shopId, setShopId] = useState<string | null>(null)
   const supabase = createClient()
@@ -26,7 +26,10 @@ export default function NavLinks({ onLinkClick }: { onLinkClick?: () => void }) 
     fetchIds()
   }, [supabase])
 
-  // On active notre système de notification temps réel
+  // On active notre système de notification temps réel.
+  // NOTE : Le badge "newSubscribers" n'est plus exposé dans la sidebar
+  // (la page Abonnés a été supprimée), mais le hook continue d'exister
+  // car il alimente toujours la carte Abonnés du dashboard Aperçu.
   const { pendingOrders, unreadMessages } = useSellerBadges(shopId, userId)
 
   const links = [
@@ -51,12 +54,12 @@ export default function NavLinks({ onLinkClick }: { onLinkClick?: () => void }) 
             onClick={onLinkClick}
             className={`flex items-center justify-between px-4 py-3 font-montserrat font-bold text-xs uppercase tracking-widest transition-colors rounded-none ${
               isActive
-                ? 'bg-white text-black font-black' 
+                ? 'bg-white text-black font-black'
                 : 'text-gray-400 hover:bg-white/5 hover:text-white'
             }`}
           >
             <span>{link.name}</span>
-            
+
             {/* BADGE BRUTALISTE */}
             {link.badge && link.badge > 0 ? (
               <span className="bg-red-600 text-white text-[10px] font-black px-2 py-0.5 border border-red-600 animate-pulse">

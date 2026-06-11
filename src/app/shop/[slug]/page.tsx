@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Navbar from '@/components/Navbar'
 import SubscribeButton from '@/components/SubscribeButton'
+import { computeGhostSubscribers } from '@/utils/subscribers'
 
 export default async function ShopPage({
   params
@@ -16,7 +17,8 @@ export default async function ShopPage({
   const { data: shop, error: shopError } = await supabase.from('shops').select('*').eq('slug', shopSlug).single()
   if (shopError || !shop) notFound()
 
-  const { data: products } = await supabase.from('products').select('*').eq('shop_id', shop.id).eq('is_available', true).order('created_at', { ascending: false })
+  // On conserve les produits en rupture (ils seront affichés avec un badge)
+  const { data: products } = await supabase.from('products').select('*').eq('shop_id', shop.id).order('created_at', { ascending: false })
 
   const hasAboutSection = shop.story || shop.bio || shop.values
   const hasPoliciesSection = shop.delivery_locations || shop.return_policy || shop.policies
@@ -27,6 +29,15 @@ export default async function ShopPage({
     const { data: sub } = await supabase.from('subscriptions').select('id').eq('user_id', user.id).eq('shop_id', shop.id).single()
     isSubscribed = !!sub
   }
+
+  // Calcul des abonnés : vrais + fantômes (boost de visibilité)
+  const { count: realSubscribersCount } = await supabase
+    .from('subscriptions')
+    .select('*', { count: 'exact', head: true })
+    .eq('shop_id', shop.id)
+  const realCount = realSubscribersCount || 0
+  const ghostCount = computeGhostSubscribers(realCount)
+  const totalSubscribers = realCount + ghostCount
 
   const sectionTitleClasses = "text-xs font-montserrat font-black text-black uppercase tracking-widest mb-4 border-b border-black pb-2"
 
@@ -70,6 +81,16 @@ export default async function ShopPage({
                   {shop.expertise && (
                     <p className="text-xs md:text-sm font-bold text-gray-500 uppercase tracking-widest">{shop.expertise}</p>
                   )}
+                  {/* Nombre d'abonnés affiché publiquement (réels + fantômes) */}
+                  <p className="mt-2 text-xs font-bold text-gray-700 uppercase tracking-widest flex items-center gap-1.5">
+                    <span className="text-red-600 text-base">●</span>
+                    {totalSubscribers.toLocaleString('fr-FR')} abonné{totalSubscribers > 1 ? 's' : ''}
+                    {ghostCount > 0 && (
+                      <span className="text-[9px] text-gray-400 font-bold ml-1" title={`Dont ${realCount} réel${realCount > 1 ? 's' : ''} + ${ghostCount} boost`}>
+                        (boost +{ghostCount})
+                      </span>
+                    )}
+                  </p>
                 </div>
                 <div className="shrink-0">
                   <SubscribeButton shopId={shop.id} initialIsSubscribed={isSubscribed} isLoggedIn={!!user} />
@@ -169,9 +190,15 @@ export default async function ShopPage({
                   <Link key={product.id} href={`/product/${product.id}`} className="group flex flex-col bg-white">
                     <div className="aspect-[3/4] bg-gray-100 relative overflow-hidden mb-4 border border-gray-100">
                       {product.cover_image_url ? (
-                        <img src={product.cover_image_url} alt={product.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                        <img src={product.cover_image_url} alt={product.title} className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ${product.is_available === false ? 'grayscale opacity-80' : ''}`} />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-gray-300 text-2xl font-montserrat font-black uppercase">EDEN store</div>
+                      )}
+                      {/* Badge "En rupture" pour le grand public */}
+                      {product.is_available === false && (
+                        <div className="absolute top-2 left-2 bg-red-600 text-white text-[10px] md:text-xs font-black uppercase tracking-widest px-2 py-1 border-2 border-white shadow-sm">
+                          En rupture
+                        </div>
                       )}
                     </div>
                     

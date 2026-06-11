@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter, Montserrat } from 'next/font/google'
 import './globals.css'
 import { CartProvider } from '@/context/CartContext' 
@@ -13,6 +13,14 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   title: 'EDEN store | La Marketplace',
   description: 'Soutenir. Bâtir. Grandir ensemble.',
+}
+
+// Empêche le zoom automatique des navigateurs sur les champs < 16px
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 }
 
 export default function RootLayout({

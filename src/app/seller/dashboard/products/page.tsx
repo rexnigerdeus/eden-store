@@ -66,7 +66,7 @@ export default async function ProductsPage() {
                 
                 {/* Badge Statut (Stock) */}
                 <div className={`absolute top-0 left-0 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest border-r-2 border-b-2 border-black ${product.is_available ? 'bg-white text-black' : 'bg-red-600 text-white'}`}>
-                  {product.is_available ? 'En ligne' : 'Rupture'}
+                  {product.is_available ? 'Disponible' : 'En rupture'}
                 </div>
               </div>
 

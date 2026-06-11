@@ -16,11 +16,14 @@ export default async function CheckoutPage() {
     profile = data
   }
 
+  // On injecte aussi l'email (qui vient de auth, pas de la table profiles)
+  const userEmail = user?.email || null
+
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
-      {/* On envoie le profil, ou "null" si c'est un invité */}
-      <CheckoutClient userProfile={profile} />
+      {/* On envoie le profil, l'email authentifié, ou "null" si c'est un invité */}
+      <CheckoutClient userProfile={profile} userEmail={userEmail} />
     </div>
   )
 }

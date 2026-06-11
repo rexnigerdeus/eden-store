@@ -41,7 +41,7 @@ export default function ProductActions({
             : 'border-black bg-black text-white hover:bg-gray-900'
         }`}
       >
-        {isToggling ? '...' : (isAvailable ? 'Retirer' : 'Publier')}
+        {isToggling ? '...' : (isAvailable ? 'Marquer en rupture' : 'Remettre en vente')}
       </button>
 
       {/* Bouton Modifier */}

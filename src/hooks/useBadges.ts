@@ -9,6 +9,8 @@ import { createClient } from '@/utils/supabase/client'
 export function useSellerBadges(shopId: string | null, userId: string | null) {
   const [pendingOrders, setPendingOrders] = useState(0)
   const [unreadMessages, setUnreadMessages] = useState(0)
+  // Compteur de "nouveaux abonnés" depuis la dernière consultation de la page
+  const [newSubscribers, setNewSubscribers] = useState(0)
 
   useEffect(() => {
     if (!shopId || !userId) return
@@ -59,6 +61,10 @@ export function useSellerBadges(shopId: string | null, userId: string | null) {
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages' }, () => {
          fetchCounts() // Recalculer si un message est marqué comme lu
       })
+      // === NOTIFICATION : nouveau client abonné à la boutique ===
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'subscriptions', filter: `shop_id=eq.${shopId}` }, () => {
+        setNewSubscribers(prev => prev + 1)
+      })
       .subscribe()
 
     // Nettoyage à la destruction du composant
@@ -67,7 +73,10 @@ export function useSellerBadges(shopId: string | null, userId: string | null) {
     }
   }, [shopId, userId]) // Retrait de 'supabase' des dépendances pour éviter les re-rendus inutiles
 
-  return { pendingOrders, unreadMessages }
+  // Pour "consommer" les notifs de nouveaux abonnés quand le vendeur visite la page
+  const clearNewSubscribers = () => setNewSubscribers(0)
+
+  return { pendingOrders, unreadMessages, newSubscribers, clearNewSubscribers }
 }
 
 // ==========================================
@@ -110,6 +119,9 @@ export function useAdminBadges() {
 // ==========================================
 export function useClientBadges(userId: string | null) {
   const [unreadMessages, setUnreadMessages] = useState(0)
+  // Compteur de "notifications de commande" = nombre d'événements de statut
+  // qui se sont produits depuis la dernière visite de l'utilisateur.
+  const [orderUpdates, setOrderUpdates] = useState(0)
 
   useEffect(() => {
     if (!userId) return
@@ -143,6 +155,13 @@ export function useClientBadges(userId: string | null) {
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages' }, () => {
         fetchCounts()
       })
+      // === NOTIFICATION : changement de statut d'une de MES commandes ===
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders', filter: `customer_id=eq.${userId}` }, (payload: any) => {
+        // Incrémente le compteur de notifications à chaque changement d'état
+        if (payload?.new && payload?.old && payload.new.status !== payload.old.status) {
+          setOrderUpdates(prev => prev + 1)
+        }
+      })
       .subscribe()
 
     return () => { 
@@ -150,5 +169,8 @@ export function useClientBadges(userId: string | null) {
     }
   }, [userId])
 
-  return { unreadMessages }
+  // Pour "consommer" les notifs quand l'utilisateur visite /account
+  const clearOrderUpdates = () => setOrderUpdates(0)
+
+  return { unreadMessages, orderUpdates, clearOrderUpdates }
 }

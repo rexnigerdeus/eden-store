@@ -9,6 +9,7 @@ interface Product {
   title: string
   price: number
   cover_image_url: string
+  is_available?: boolean
   shops: { name: string; slug: string }
 }
 
@@ -58,19 +59,28 @@ export default function InfiniteProductList({ initialProducts }: { initialProduc
             {/* L'image (Format portrait 3/4 très utilisé dans la mode) */}
             <div className="aspect-[3/4] bg-gray-100 relative overflow-hidden mb-4">
               {product.cover_image_url ? (
-                <img 
-                  src={product.cover_image_url} 
-                  alt={product.title} 
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                <img
+                  src={product.cover_image_url}
+                  alt={product.title}
+                  className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ${product.is_available === false ? 'grayscale opacity-80' : ''}`}
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-gray-300 text-3xl">EDEN store</div>
               )}
-              
-              {/* Badge optionnel "Nouveau" ou "Vendeur" */}
-              <div className="absolute top-2 left-2 bg-white text-black text-[10px] font-bold uppercase tracking-widest px-2 py-1">
-                Nouveau
-              </div>
+
+              {/* Badge "En rupture" pour le grand public */}
+              {product.is_available === false && (
+                <div className="absolute top-2 left-2 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest px-2 py-1 border-2 border-white shadow-sm">
+                  En rupture
+                </div>
+              )}
+
+              {/* Badge optionnel "Nouveau" (uniquement pour les produits disponibles) */}
+              {product.is_available !== false && (
+                <div className="absolute top-2 left-2 bg-white text-black text-[10px] font-bold uppercase tracking-widest px-2 py-1">
+                  Nouveau
+                </div>
+              )}
             </div>
 
             {/* Les informations (Minimalistes, majuscules) */}

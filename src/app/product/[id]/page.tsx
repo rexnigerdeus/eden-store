@@ -87,12 +87,18 @@ export default async function ProductPage({
         {/* COLONNE GAUCHE : L'IMAGE */}
         <div className="w-full md:w-[55%] bg-gray-50 relative flex items-center justify-center border-r border-gray-100">
           {product.cover_image_url ? (
-            <div className="w-full aspect-square md:sticky md:top-20">
-              <img 
-                src={product.cover_image_url} 
-                alt={product.title} 
-                className="w-full h-full object-contain p-4 md:p-12"
+            <div className="w-full aspect-square md:sticky md:top-20 relative">
+              <img
+                src={product.cover_image_url}
+                alt={product.title}
+                className={`w-full h-full object-contain p-4 md:p-12 ${product.is_available === false ? 'grayscale opacity-80' : ''}`}
               />
+              {/* Badge "En rupture" pour le grand public */}
+              {product.is_available === false && (
+                <div className="absolute top-4 left-4 bg-red-600 text-white text-xs font-black uppercase tracking-widest px-3 py-2 border-2 border-white shadow-md">
+                  En rupture de stock
+                </div>
+              )}
             </div>
           ) : (
             <div className="w-full aspect-square flex items-center justify-center text-gray-300 font-bold uppercase text-xl">

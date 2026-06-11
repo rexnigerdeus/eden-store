@@ -60,11 +60,10 @@ export default async function MarketplacePage() {
     .limit(8)
 
   // On récupère uniquement la PREMIÈRE page (les 8 premiers produits) en serveur
-  // Le composant client se chargera de la suite !
+  // (Les produits en rupture sont conservés : ils seront affichés avec un badge)
   const { data: initialProducts } = await supabase
     .from('products')
     .select('*, shops!inner(name, slug)')
-    .eq('is_available', true)
     .eq('shops.subscription_status', 'active')
     .order('created_at', { ascending: false })
     .range(0, 7) // Index 0 à 7 = 8 produits

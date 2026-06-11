@@ -13,7 +13,8 @@ export async function getInfiniteProducts(page: number, limit: number = 8) {
   const { data, error } = await supabase
     .from('products')
     .select('*, shops!inner(name, slug)')
-    .eq('is_available', true)
+    // On garde uniquement les vendeurs dont l'abonnement est actif,
+    // mais on conserve les produits "en rupture" pour les afficher au public.
     .eq('shops.subscription_status', 'active')
     .order('created_at', { ascending: false })
     .range(from, to)

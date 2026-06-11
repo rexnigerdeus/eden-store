@@ -1,6 +1,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { supabaseAdmin } from '@/utils/supabase/admin'
 import Link from 'next/link'
+import { computeGhostSubscribers } from '@/utils/subscribers'
 
 export default async function DashboardOverview() {
   const supabase = await createClient()
@@ -50,6 +51,9 @@ export default async function DashboardOverview() {
   const firstName = profile?.full_name?.split(' ')[0] || 'Vendeur'
   
   const { data: followers } = await supabaseAdmin.from('subscriptions').select('created_at, profiles(full_name)').eq('shop_id', shop.id)
+  // Calcul du total affiché : vrais abonnés + abonnés fantômes (boost interne)
+  const realFollowersCount = followers?.length || 0
+  const totalFollowersCount = realFollowersCount + computeGhostSubscribers(realFollowersCount)
   const { data: topFavorites } = await supabase.from('products').select('title, favorites(count)').eq('shop_id', shop.id)
 
   // 1. Récupération des avis avec user_id
@@ -209,18 +213,26 @@ export default async function DashboardOverview() {
         </div>
 
         <div className="border-2 border-black p-6 bg-white flex flex-col">
-          <h3 className="text-[10px] font-montserrat font-black text-gray-400 uppercase tracking-widest mb-6 border-b-2 border-black pb-3">👥 Abonnés ({followers?.length || 0})</h3>
+          <h3 className="text-[10px] font-montserrat font-black text-gray-400 uppercase tracking-widest mb-6 border-b-2 border-black pb-3">👥 Abonnés</h3>
           <div className="flex-1">
-            {followers && followers.length > 0 ? (
-              <div className="flex flex-wrap gap-2 mb-4">
+            <p className="text-3xl font-montserrat font-black text-black mb-2">
+              {totalFollowersCount.toLocaleString('fr-FR')}
+            </p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">
+              {realFollowersCount > 1
+                ? `${realFollowersCount} supporters de votre boutique`
+                : realFollowersCount === 1
+                ? '1 supporter de votre boutique'
+                : 'Aucun abonné pour le moment'}
+            </p>
+            {followers && followers.length > 0 && (
+              <div className="flex flex-wrap gap-2">
                 {followers.slice(0, 6).map((f: any, i: number) => (
                   <div key={i} className="w-10 h-10 bg-black text-white flex items-center justify-center text-sm font-black font-montserrat border-2 border-black" title={f.profiles?.full_name}>
                     {f.profiles?.full_name?.charAt(0)?.toUpperCase() || '?'}
                   </div>
                 ))}
               </div>
-            ) : (
-              <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Aucun abonnement.</p>
             )}
           </div>
         </div>

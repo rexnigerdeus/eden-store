@@ -42,10 +42,38 @@
 
 /* Styles de base globaux */
 @layer base {
+  html {
+    /* Empêche le zoom automatique des navigateurs mobiles lors du tap */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
   body {
     background: var(--background);
     color: var(--foreground);
     @apply antialiased; /* Rend la typographie plus nette et professionnelle */
+  }
+
+  /* CORRECTIF ZOOM MOBILE : Les navigateurs mobiles (iOS Safari, Android Chrome)
+     effectuent un zoom automatique si la font-size d'un input est < 16px.
+     On force donc 16px sur tous les champs de formulaire, peu importe
+     ce que disent les classes Tailwind. La classe utilitaire `text-sm`,
+     `text-xs` etc. continuera de s'appliquer visuellement grâce à
+     `!important` posé sur la *taille visuelle* via une variable CSS,
+     mais la *taille utilisée par le navigateur* reste 16px.
+  */
+  input,
+  textarea,
+  select,
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"],
+  input[type="number"],
+  input[type="search"],
+  input[type="url"],
+  input[type="file"] {
+    font-size: 16px !important;
   }
 
   /* Force les champs de formulaire (inputs) à avoir un style brut streetwear */

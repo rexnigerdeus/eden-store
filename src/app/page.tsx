@@ -2,86 +2,88 @@ import { createClient } from '@/utils/supabase/server'
 import Link from 'next/link'
 import Navbar from '@/components/Navbar'
 import InfiniteProductList from '@/components/InfiniteProductList'
-
-// Fonction pour attribuer des images très "Streetwear/Fashion" aux catégories
-const getCategoryImageUrl = (categoryName: string) => {
-  const name = categoryName.toLowerCase();
-  if (name.includes('habillement') || name.includes('vêtement') || name.includes('t-shirt')) {
-    return "https://images.unsplash.com/photo-1523398002811-999aa8e9face?q=80&w=800&auto=format&fit=crop"; 
-  }
-  if (name.includes('accessoire') || name.includes('casquette')) {
-    return "https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=800&auto=format&fit=crop"; 
-  }
-  if (name.includes('chaussure') || name.includes('sneaker')) {
-    return "https://images.unsplash.com/photo-1608231387042-66d1773070a5?q=80&w=800&auto=format&fit=crop"; 
-  }
-  // Image par défaut (Look urbain)
-  return "https://images.unsplash.com/photo-1617114919297-3c8ddb01f599?q=80&w=800&auto=format&fit=crop"; 
-}
+import HeroSlider, { HeroSlide } from '@/components/HeroSlider'
+import { getCategoryImageUrl } from '@/utils/categoryImages'
 
 export default async function HomePage() {
   const supabase = await createClient()
 
-  // 1. Récupérer quelques catégories pour la mise en avant
-  const { data: categories } = await supabase.from('categories').select('*').limit(4)
+  // 1. Récupérer TOUTES les catégories pour la mise en avant
+  const { data: categories } = await supabase
+    .from('categories')
+    .select('*')
+    .order('name', { ascending: true })
 
   // 2. Récupérer les 8 premiers produits pour le défilement infini
+  // (Les produits en rupture sont conservés : ils seront affichés avec un badge)
   const { data: initialProducts } = await supabase
     .from('products')
     .select('*, shops!inner(name, slug)')
-    .eq('is_available', true)
     .eq('shops.subscription_status', 'active')
     .order('created_at', { ascending: false })
     .range(0, 7)
+
+  // 3. Construction des 3 slides du Hero à partir des 3 premières catégories.
+  // Si la base contient moins de 3 catégories, on complète avec des slides génériques
+  // pour garantir un carrousel de 3 entrées et une mise en page stable.
+  const FALLBACK_SLIDES: HeroSlide[] = [
+    {
+      id: 'fallback-mode',
+      image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=2000&auto=format&fit=crop',
+      eyebrow: 'Saison 1',
+      title: 'Saison 1.',
+      subtitle: 'La nouvelle collection est là',
+      ctaLabel: 'Acheter maintenant',
+      ctaHref: '#nouveautes',
+    },
+  ]
+
+  const dynamicSlides: HeroSlide[] = (categories || []).slice(0, 3).map((cat) => ({
+    id: cat.id,
+    image: getCategoryImageUrl(cat.name),
+    eyebrow: 'Univers',
+    title: cat.name,
+    subtitle: 'Découvrez notre sélection',
+    ctaLabel: 'Voir la collection',
+    ctaHref: `/category/${cat.id}`,
+  }))
+
+  const slides: HeroSlide[] =
+    dynamicSlides.length > 0
+      ? dynamicSlides
+      : FALLBACK_SLIDES
 
   return (
     <div className="min-h-screen bg-white font-sans">
       <Navbar />
 
-      {/* --- HERO BANNER (Plein écran, très impactant) --- */}
-      <section className="relative w-full h-[70vh] md:h-[85vh] flex items-center justify-center bg-black">
-        {/* L'image de fond principale */}
-        <img 
-          src="https://images.unsplash.com/photo-1606856086780-321abfb481cd?q=80&w=2000&auto=format&fit=crop" 
-          alt="Streetwear Collection" 
-          className="absolute inset-0 w-full h-full object-cover opacity-70"
-        />
-        
-        <div className="relative z-10 text-center px-4 flex flex-col items-center mt-16">
-          <h2 className="text-white font-montserrat font-black text-6xl md:text-8xl lg:text-9xl uppercase tracking-tighter mb-2 md:mb-4 drop-shadow-lg">
-            Saison <br className="md:hidden" /> 1.
-          </h2>
-          <p className="text-white text-sm md:text-xl uppercase tracking-[0.3em] font-bold mb-8 md:mb-10 bg-black/50 px-4 py-1">
-            La nouvelle collection est là
-          </p>
-          <Link href="#nouveautes" className="inline-block bg-white text-black px-8 py-4 md:px-12 md:py-4 font-montserrat font-black text-sm md:text-base uppercase tracking-widest hover:bg-black hover:text-white transition-all duration-300">
-            Acheter maintenant
-          </Link>
-        </div>
-      </section>
+      {/* --- HERO BANNER : SLIDER RESPONSIVE 3 SLIDES --- */}
+      <HeroSlider slides={slides} autoPlayDelay={7000} />
 
       {/* --- SHOP BY CATEGORY (Grille brute) --- */}
       <section className="py-12 md:py-20 max-w-[1600px] mx-auto px-4 sm:px-6">
         <h2 className="font-montserrat font-black text-3xl md:text-4xl text-black uppercase tracking-tight mb-8 md:mb-12 text-center">
           Acheter par catégorie
         </h2>
-        
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
           {categories?.map((category) => (
-            <Link key={category.id} href={`/category/${category.id}`} className="group relative block aspect-[4/5] bg-gray-100 overflow-hidden">
-              <img 
-                src={getCategoryImageUrl(category.name)} 
-                alt={category.name} 
+            <Link key={category.id} href={`/category/${category.id}`} className="group relative block aspect-[4/5] bg-gray-100 overflow-hidden rounded-sm">
+              <img
+                src={getCategoryImageUrl(category.name)}
+                alt={category.name}
                 className="absolute inset-0 w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
               />
-              {/* Overlay sombre en bas pour le texte */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80" />
-              
-              <div className="absolute bottom-6 left-0 w-full text-center">
-                <h3 className="text-white font-montserrat font-black text-xl md:text-2xl uppercase tracking-widest">
+              {/* Overlay sombre permanent pour garantir un contraste optimal */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/25 group-hover:from-black/80 group-hover:via-black/30 group-hover:to-black/10 transition-all duration-500" aria-hidden="true" />
+              {/* Contenu textuel toujours lisible grâce à l'overlay sombre */}
+              <div className="absolute inset-x-0 bottom-4 md:bottom-5 px-2 md:px-3 text-center">
+                <h3 className="text-white font-montserrat font-black uppercase tracking-tight drop-shadow-md leading-[1.05]
+                               text-[11px] sm:text-xs md:text-sm lg:text-base
+                               line-clamp-3 break-words">
                   {category.name}
                 </h3>
-                <span className="inline-block mt-2 text-xs text-white uppercase tracking-widest border-b border-white pb-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <span className="inline-block mt-1.5 md:mt-2 text-[9px] md:text-[10px] text-white uppercase tracking-widest border-b border-white pb-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   Découvrir
                 </span>
               </div>
@@ -98,7 +100,7 @@ export default async function HomePage() {
           </h2>
           <div className="h-1 w-24 bg-red-600 mt-4"></div>
         </div>
-        
+
         <InfiniteProductList initialProducts={initialProducts || []} />
       </section>
 

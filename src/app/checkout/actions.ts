@@ -35,6 +35,23 @@ export async function placeOrder(cart: CartItem[], shippingData: {
       user = authData.user
     }
 
+    // 0. VÉRIFICATION DE STOCK : on s'assure qu'aucun produit du panier n'est en rupture
+    const productIds = Array.from(new Set(cart.map((item) => item.product_id)))
+    const { data: stockCheck, error: stockError } = await supabaseAdmin
+      .from('products')
+      .select('id, title, is_available')
+      .in('id', productIds)
+
+    if (stockError) throw stockError
+
+    const outOfStock = (stockCheck || []).filter((p) => p.is_available === false)
+    if (outOfStock.length > 0) {
+      const titles = outOfStock.map((p) => p.title).join(', ')
+      throw new Error(
+        `Commande impossible : le(s) produit(s) suivant(s) sont en rupture de stock : ${titles}. Veuillez les retirer de votre panier.`
+      )
+    }
+
     const groupedByShop = cart.reduce((acc: any, item) => {
       if (!acc[item.shop_id]) acc[item.shop_id] = []
       acc[item.shop_id].push(item)

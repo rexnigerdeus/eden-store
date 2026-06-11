@@ -31,10 +31,10 @@ export default async function SearchPage({
   }
 
   // 2. On prépare la requête des produits
+  // (Les produits en rupture sont conservés : ils seront affichés avec un badge)
   let dbQuery = supabase
     .from('products')
     .select('*, shops!inner(name, slug)')
-    .eq('is_available', true)
     .eq('shops.subscription_status', 'active')
 
   // 3. On applique les filtres
@@ -85,9 +85,15 @@ export default async function SearchPage({
               <Link key={product.id} href={`/product/${product.id}`} className="group flex flex-col bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100">
                 <div className="aspect-[4/5] bg-gray-100 relative overflow-hidden">
                   {product.cover_image_url ? (
-                    <img src={product.cover_image_url} alt={product.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <img src={product.cover_image_url} alt={product.title} className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${product.is_available === false ? 'grayscale opacity-80' : ''}`} />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-400"><span className="text-4xl sm:text-5xl">📷</span></div>
+                  )}
+                  {/* Badge "En rupture" pour le grand public */}
+                  {product.is_available === false && (
+                    <div className="absolute top-2 left-2 bg-red-600 text-white text-[10px] sm:text-xs font-black uppercase tracking-widest px-2 py-1 border-2 border-white shadow-sm">
+                      En rupture
+                    </div>
                   )}
                 </div>
                 <div className="p-3 sm:p-4 flex flex-col flex-1">

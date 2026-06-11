@@ -22,11 +22,11 @@ export default async function CategoryPage({
   if (!category) notFound()
 
   // 2. Récupérer tous les produits dispos dans cette catégorie
+  // (Les produits en rupture sont conservés : ils seront affichés avec un badge)
   const { data: products } = await supabase
     .from('products')
     .select('*, shops!inner(name, slug)')
     .eq('category_id', category.id)
-    .eq('is_available', true)
     .eq('shops.subscription_status', 'active')
     .order('created_at', { ascending: false })
 
@@ -73,14 +73,21 @@ export default async function CategoryPage({
                   {/* L'image (Format 3/4) */}
                   <div className="aspect-[3/4] bg-gray-100 relative overflow-hidden mb-4 border border-gray-100">
                     {product.cover_image_url ? (
-                      <img 
-                        src={product.cover_image_url} 
-                        alt={product.title} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                      <img
+                        src={product.cover_image_url}
+                        alt={product.title}
+                        className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ${product.is_available === false ? 'grayscale opacity-80' : ''}`}
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-gray-300 text-2xl font-montserrat font-black uppercase">
                         EDEN store
+                      </div>
+                    )}
+
+                    {/* Badge "En rupture" pour le grand public */}
+                    {product.is_available === false && (
+                      <div className="absolute top-2 left-2 bg-red-600 text-white text-[10px] md:text-xs font-black uppercase tracking-widest px-2 py-1 border-2 border-white shadow-sm">
+                        En rupture
                       </div>
                     )}
                   </div>

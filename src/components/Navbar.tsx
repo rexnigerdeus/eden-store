@@ -32,8 +32,16 @@ export default function Navbar() {
     return () => { subscription.unsubscribe() }
   }, [supabase])
 
-  // Notifications des messages non lus du client
-  const { unreadMessages } = useClientBadges(user?.id || null)
+  // Notifications des messages non lus du client + changements d'état de commandes
+  const { unreadMessages, orderUpdates, clearOrderUpdates } = useClientBadges(user?.id || null)
+
+  // Quand l'utilisateur visite /account, on "consomme" les notifications
+  // de changement d'état pour réinitialiser le badge.
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.pathname.startsWith('/account')) {
+      clearOrderUpdates()
+    }
+  }, [clearOrderUpdates])
 
   return (
     <header className="w-full sticky top-0 z-50 bg-white shadow-sm border-b-2 border-black">
@@ -64,9 +72,8 @@ export default function Navbar() {
 
           {/* CENTRE : Liens Desktop */}
           <nav className="hidden md:flex space-x-8 absolute left-1/2 transform -translate-x-1/2">
-            <Link href="/category/vetements" className="text-sm font-bold text-black uppercase tracking-widest hover:text-red-600 transition-colors">Vêtements</Link>
-            <Link href="/category/accessoires" className="text-sm font-bold text-black uppercase tracking-widest hover:text-red-600 transition-colors">Accessoires</Link>
-            <Link href="/shops" className="text-sm font-bold text-gray-500 uppercase tracking-widest hover:text-black transition-colors">Marques</Link>
+            <Link href="/shops" className="text-sm font-bold text-gray-500 uppercase tracking-widest hover:text-black transition-colors">Boutiques</Link>
+            <Link href="/seller/signup" className="text-sm font-bold text-gray-500 uppercase tracking-widest hover:text-black transition-colors">Devenir Vendeur</Link>
           </nav>
 
           {/* DROITE : Icônes */}
@@ -76,8 +83,13 @@ export default function Navbar() {
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="square" strokeLinejoin="miter" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
             </Link>
             
-            <Link href={user ? '/account' : '/login'} className="text-black hover:text-red-600 transition-colors hidden sm:block">
+            <Link href={user ? '/account' : '/login'} className="text-black hover:text-red-600 transition-colors hidden sm:block relative">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="square" strokeLinejoin="miter" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+              {orderUpdates > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[9px] font-black px-1.5 py-0.5 border border-red-600 animate-pulse">
+                  {orderUpdates}
+                </span>
+              )}
             </Link>
 
             <Link href="/account/favorites" className="text-black hover:text-red-600 transition-colors hidden sm:block">
@@ -114,7 +126,7 @@ export default function Navbar() {
             <div className="flex flex-col space-y-4">
               <Link href="/category/vetements" onClick={() => setMobileMenuOpen(false)} className="text-sm font-bold text-black uppercase tracking-widest hover:text-red-600 transition-colors px-2">Vêtements</Link>
               <Link href="/category/accessoires" onClick={() => setMobileMenuOpen(false)} className="text-sm font-bold text-black uppercase tracking-widest hover:text-red-600 transition-colors px-2">Accessoires</Link>
-              <Link href="/shops" onClick={() => setMobileMenuOpen(false)} className="text-sm font-bold text-gray-500 uppercase tracking-widest hover:text-black transition-colors px-2">Marques</Link>
+              <Link href="/shops" onClick={() => setMobileMenuOpen(false)} className="text-sm font-bold text-gray-500 uppercase tracking-widest hover:text-black transition-colors px-2">Boutiques</Link>
               <Link href={user ? '/account' : '/login'} onClick={() => setMobileMenuOpen(false)} className="text-sm font-bold text-black uppercase tracking-widest hover:text-red-600 transition-colors px-2">
                 {user ? 'Mon compte' : 'Se connecter'}
               </Link>
