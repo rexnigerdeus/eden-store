@@ -124,8 +124,6 @@ export default function Navbar() {
         {mobileMenuOpen && (
           <nav className="md:hidden border-t-2 border-black bg-white pb-6 pt-4">
             <div className="flex flex-col space-y-4">
-              <Link href="/category/vetements" onClick={() => setMobileMenuOpen(false)} className="text-sm font-bold text-black uppercase tracking-widest hover:text-red-600 transition-colors px-2">Vêtements</Link>
-              <Link href="/category/accessoires" onClick={() => setMobileMenuOpen(false)} className="text-sm font-bold text-black uppercase tracking-widest hover:text-red-600 transition-colors px-2">Accessoires</Link>
               <Link href="/shops" onClick={() => setMobileMenuOpen(false)} className="text-sm font-bold text-gray-500 uppercase tracking-widest hover:text-black transition-colors px-2">Boutiques</Link>
               <Link href={user ? '/account' : '/login'} onClick={() => setMobileMenuOpen(false)} className="text-sm font-bold text-black uppercase tracking-widest hover:text-red-600 transition-colors px-2">
                 {user ? 'Mon compte' : 'Se connecter'}
