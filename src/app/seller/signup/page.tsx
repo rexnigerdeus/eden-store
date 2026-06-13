@@ -36,7 +36,7 @@ function SignupForm() {
 
         {/* En-tête aéré et élégant */}
         <div className="text-center">
-          <h1 className="text-2xl sm:text-3xl font-light text-gray-900 tracking-tight">Devenir vendeur sur EDEN store</h1>
+          <h1 className="text-2xl sm:text-3xl font-light text-gray-900 tracking-tight">Devenir vendeur sur EDEN MARKET</h1>
           <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-500">
             Créez votre boutique et rejoignez la communauté.
           </p>

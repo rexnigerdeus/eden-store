@@ -66,7 +66,7 @@ export default function Navbar() {
               </svg>
             </button>
             <Link href="/" className="text-2xl sm:text-4xl font-montserrat font-black text-black tracking-tighter uppercase">
-              EDEN STORE<span className="text-red-600">.</span>
+              EDEN MARKET<span className="text-red-600">.</span>
             </Link>
           </div>
 

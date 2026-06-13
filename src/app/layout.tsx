@@ -11,7 +11,7 @@ const montserrat = Montserrat({
 })
 
 export const metadata: Metadata = {
-  title: 'EDEN store | La Marketplace',
+  title: 'EDEN MARKET | La Marketplace',
   description: 'Soutenir. Bâtir. Grandir ensemble.',
 }
 

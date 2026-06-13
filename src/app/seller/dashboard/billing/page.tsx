@@ -129,7 +129,7 @@ export default async function BillingPage() {
           <h3 className="text-sm font-montserrat font-black uppercase tracking-widest text-black mb-4">Instructions de paiement</h3>
           <div className="bg-gray-50 border-2 border-black p-6 mb-8">
             <ol className="list-decimal list-inside space-y-4 text-xs sm:text-sm font-bold uppercase tracking-wider text-gray-600 leading-relaxed">
-              <li>Effectuez le transfert via <strong className="text-black">Wave</strong> au <span className="text-black bg-gray-200 px-2 py-0.5 font-mono">01 02 03 04 05</span> ou <strong className="text-black">Orange Money</strong> au <span className="text-black bg-gray-200 px-2 py-0.5 font-mono">07 08 09 10 11</span>.</li>
+              <li>Effectuez le transfert via <strong className="text-black">Wave</strong> ou <strong className="text-black">Orange Money</strong> au <span className="text-black bg-gray-200 px-2 py-0.5 font-mono">07 78 55 44 83</span>.</li>
               <li>Mettez le <strong className="text-black">nom de votre boutique</strong> en motif du transfert.</li>
               <li>Cliquez sur le bouton ci-dessous pour nous notifier de votre paiement.</li>
             </ol>

@@ -120,7 +120,7 @@ export default function CartClient() {
                     {item.cover_image_url ? (
                       <img src={item.cover_image_url} alt={item.title} className="w-full h-full object-cover" />
                     ) : (
-                      <span className="w-full h-full flex items-center justify-center text-xs font-montserrat font-bold text-gray-400 uppercase">EDEN store</span>
+                      <span className="w-full h-full flex items-center justify-center text-xs font-montserrat font-bold text-gray-400 uppercase">EDEN MARKET</span>
                     )}
                     {/* Badge "En rupture" sur l'image */}
                     {isOutOfStock && (

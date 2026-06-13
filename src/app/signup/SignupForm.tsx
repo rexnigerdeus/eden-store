@@ -23,7 +23,7 @@ export default function SignupForm() {
     <div className="w-full max-w-md bg-white p-5 sm:p-8 rounded-xl sm:rounded-2xl shadow-sm border border-gray-100">
       <div className="text-center mb-6 sm:mb-8">
         <h1 className="text-xl sm:text-2xl font-bold text-walmart-darkBlue">Créer un compte</h1>
-        <p className="text-sm sm:text-base text-gray-500 mt-2">Rejoignez EDEN store pour suivre vos commandes et acheter plus rapidement.</p>
+        <p className="text-sm sm:text-base text-gray-500 mt-2">Rejoignez EDEN MARKET pour suivre vos commandes et acheter plus rapidement.</p>
       </div>
 
       {errorMessage && (

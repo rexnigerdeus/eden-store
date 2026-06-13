@@ -37,7 +37,7 @@ function LoginForm() {
         <div className="text-center">
           <h1 className="text-2xl sm:text-3xl font-light text-gray-900 tracking-tight">Espace Vendeur</h1>
           <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-500">
-            Connectez-vous pour gérer votre boutique EDEN store.
+            Connectez-vous pour gérer votre boutique EDEN MARKET.
           </p>
         </div>
 

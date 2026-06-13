@@ -65,7 +65,7 @@ export default function InfiniteProductList({ initialProducts }: { initialProduc
                   className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ${product.is_available === false ? 'grayscale opacity-80' : ''}`}
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-gray-300 text-3xl">EDEN store</div>
+                <div className="w-full h-full flex items-center justify-center text-gray-300 text-3xl">EDEN MARKET</div>
               )}
 
               {/* Badge "En rupture" pour le grand public */}

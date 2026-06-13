@@ -114,7 +114,7 @@ export default function ShopForm({ shop }: { shop: any }) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
                 <label htmlFor="name" className={labelClasses}>Nom de la boutique *</label>
-                <input id="name" name="name" type="text" required defaultValue={shop?.name || ''} className={inputClasses} placeholder="Ex: EDEN store Store" />
+                <input id="name" name="name" type="text" required defaultValue={shop?.name || ''} className={inputClasses} placeholder="Ex: EDEN MARKET Store" />
               </div>
               <div>
                 <label htmlFor="expertise" className={labelClasses}>Expertise / Slogan (Optionnel)</label>

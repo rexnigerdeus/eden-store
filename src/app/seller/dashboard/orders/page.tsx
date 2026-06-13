@@ -146,7 +146,7 @@ export default async function OrdersPage() {
                           {item.products?.cover_image_url ? (
                             <img src={item.products.cover_image_url} alt="Produit" className="w-full h-full object-cover" />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-[10px] font-montserrat font-bold uppercase text-gray-400">EDEN store</div>
+                            <div className="w-full h-full flex items-center justify-center text-[10px] font-montserrat font-bold uppercase text-gray-400">EDEN MARKET</div>
                           )}
                         </div>
                         <div className="flex-1 min-w-0 pt-1">

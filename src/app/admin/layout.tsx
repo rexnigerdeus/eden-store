@@ -17,7 +17,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <aside className="w-full md:w-64 bg-black text-white md:min-h-screen flex flex-col border-r border-white/10 shrink-0">
         <div className="p-6 md:p-8 border-b border-white/10 mb-6">
           <Link href="/admin/dashboard" className="text-2xl font-montserrat font-black text-white uppercase tracking-tighter block mb-1">
-            EDEN store. <span className="text-gray-500">ADMIN</span>
+            EDEN MARKET. <span className="text-gray-500">ADMIN</span>
           </Link>
           <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Superviseur Global</p>
         </div>

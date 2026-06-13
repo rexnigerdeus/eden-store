@@ -120,7 +120,7 @@ export default function OrdersTabs({ orders }: { orders: Order[] }) {
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-[10px] font-montserrat font-bold text-gray-400 uppercase">
-                              EDEN store
+                              EDEN MARKET
                             </div>
                           )}
                         </div>

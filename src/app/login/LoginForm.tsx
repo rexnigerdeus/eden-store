@@ -23,7 +23,7 @@ export default function LoginForm() {
     <div className="w-full max-w-md bg-white p-5 sm:p-8 rounded-xl sm:rounded-2xl shadow-sm border border-gray-100">
       <div className="text-center mb-6 sm:mb-8">
         <h1 className="text-xl sm:text-2xl font-bold text-walmart-darkBlue">Bon retour !</h1>
-        <p className="text-sm sm:text-base text-gray-500 mt-2">Connectez-vous pour accéder à vos commandes EDEN store.</p>
+        <p className="text-sm sm:text-base text-gray-500 mt-2">Connectez-vous pour accéder à vos commandes EDEN MARKET.</p>
       </div>
 
       {errorMessage && (
@@ -52,7 +52,7 @@ export default function LoginForm() {
       </form>
 
       <p className="text-center text-xs sm:text-sm text-gray-600 mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-100">
-        Nouveau sur EDEN store ?{' '}
+        Nouveau sur EDEN MARKET ?{' '}
         <Link href="/signup" className="font-medium text-walmart-blue hover:underline">Créer un compte</Link>
       </p>
     </div>
