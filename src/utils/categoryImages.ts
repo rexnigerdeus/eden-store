@@ -29,11 +29,15 @@ export function getCategoryImageUrl(categoryName: string): string {
   ) {
     return "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=800&auto=format&fit=crop"
   }
-  // 🏠 MAISON / DÉCO / CUISINE / LINGE
+  // 🏠 MAISON / CUISINE / LINGE
   if (
-    name.includes('maison') || name.includes('déco') || name.includes('deco') ||
-    name.includes('cuisine') || name.includes('intérieur') || name.includes('interieur') ||
-    name.includes('linge') || name.includes('linge de maison')
+    name.includes('maison') || name.includes('cuisine') || name.includes('linge') || name.includes('linge de maison')
+  ) {
+    return "https://images.unsplash.com/photo-1556910096-6f5e72db6803?q=80&w=2070&auto=format&fit=crop"
+  }
+  // 🏠 DÉCO / DÉCORATION INTÉRIEUR / PLACE / DÉCOR
+  if (
+    name.includes('déco') || name.includes('deco') || name.includes('intérieur') || name.includes('interieur')
   ) {
     return "https://images.unsplash.com/photo-1615876234886-fd9a39fda97f?q=80&w=2532&auto=format&fit=crop"
   }
@@ -83,6 +87,14 @@ export function getCategoryImageUrl(categoryName: string): string {
   // ⚽ SPORT / FITNESS
   if (name.includes('sport') || name.includes('fitness') || name.includes('gym') || name.includes('athlet')) {
     return "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=800&auto=format&fit=crop"
+  }
+  // TERRAIN / TERRES / PARCELS
+  if (name.includes('terrain') || name.includes('terre') || name.includes('parcel')) {
+    return "https://images.unsplash.com/photo-1591389703635-e15a07b842d7?q=80&w=2533&auto=format&fit=crop"
+  }
+  // IMMOBILIER / LOCATION / RÉSIDENCE / APPARTEMENT 
+  if (name.includes('immobilier') || name.includes('location') || name.includes('résidence') || name.includes('appartement')) {
+    return "https://images.unsplash.com/photo-1597047084897-51e81819a499?q=80&w=2069&auto=format&fit=crop"
   }
   // 🛍️ Image par défaut (Look urbain / Streetwear)
   return "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=800&auto=format&fit=crop"

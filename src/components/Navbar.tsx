@@ -73,6 +73,7 @@ export default function Navbar() {
           {/* CENTRE : Liens Desktop */}
           <nav className="hidden md:flex space-x-8 absolute left-1/2 transform -translate-x-1/2">
             <Link href="/shops" className="text-sm font-bold text-gray-500 uppercase tracking-widest hover:text-black transition-colors">Boutiques</Link>
+            <Link href="/la-marketplace" className="text-sm font-bold text-gray-500 uppercase tracking-widest hover:text-black transition-colors">La Marketplace</Link>
             <Link href="/seller/signup" className="text-sm font-bold text-gray-500 uppercase tracking-widest hover:text-black transition-colors">Devenir Vendeur</Link>
           </nav>
 
@@ -125,6 +126,7 @@ export default function Navbar() {
           <nav className="md:hidden border-t-2 border-black bg-white pb-6 pt-4">
             <div className="flex flex-col space-y-4">
               <Link href="/shops" onClick={() => setMobileMenuOpen(false)} className="text-sm font-bold text-gray-500 uppercase tracking-widest hover:text-black transition-colors px-2">Boutiques</Link>
+              <Link href="/la-marketplace" onClick={() => setMobileMenuOpen(false)} className="text-sm font-bold text-gray-500 uppercase tracking-widest hover:text-black transition-colors px-2">La Marketplace</Link>
               <Link href={user ? '/account' : '/login'} onClick={() => setMobileMenuOpen(false)} className="text-sm font-bold text-black uppercase tracking-widest hover:text-red-600 transition-colors px-2">
                 {user ? 'Mon compte' : 'Se connecter'}
               </Link>
