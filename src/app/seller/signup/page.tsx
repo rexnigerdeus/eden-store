@@ -2,20 +2,29 @@
 
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { Suspense } from 'react'
+import { Suspense, useState } from 'react'
 import { signup } from '../auth/actions'
 import PasswordInput from '@/components/PasswordInput'
+import SellerCharter from './SellerCharter'
 
 function SignupForm() {
   const searchParams = useSearchParams()
   const message = searchParams.get('message') || ''
 
+  // Étape 1 = charte, étape 2 = formulaire
+  const [charterAccepted, setCharterAccepted] = useState(false)
+
+  // ÉTAPE 1 — Charte à accepter
+  if (!charterAccepted) {
+    return <SellerCharter onAccepted={() => setCharterAccepted(true)} />
+  }
+
+  // ÉTAPE 2 — Formulaire d'inscription (affiché uniquement après acceptation)
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-white p-4 sm:p-6 lg:p-8">
       <div className="w-full max-w-md space-y-6 sm:space-y-8">
-
-        {/* Lien de retour à l'accueil */}
-        <div className="flex justify-start">
+        {/* Lien de retour à l'accueil + rappel charte */}
+        <div className="flex justify-between items-center">
           <Link
             href="/"
             className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-gray-500 hover:text-black transition-colors group"
@@ -32,13 +41,27 @@ function SignupForm() {
             </svg>
             Retour à l'accueil
           </Link>
+
+          <button
+            type="button"
+            onClick={() => setCharterAccepted(false)}
+            className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-black transition-colors"
+            title="Revoir la charte"
+          >
+            📋 Charte acceptée
+          </button>
         </div>
 
-        {/* En-tête aéré et élégant */}
+        {/* En-tête */}
         <div className="text-center">
-          <h1 className="text-2xl sm:text-3xl font-light text-gray-900 tracking-tight">Devenir vendeur sur EDEN MARKET</h1>
+          <span className="inline-block px-3 py-1 mb-3 text-[10px] font-black uppercase tracking-[0.2em] bg-green-100 text-green-700 border border-green-600">
+            ✓ Charte acceptée
+          </span>
+          <h1 className="text-2xl sm:text-3xl font-light text-gray-900 tracking-tight">
+            Devenir vendeur sur EDEN MARKET
+          </h1>
           <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-500">
-            Créez votre boutique et rejoignez la communauté.
+            Créez votre compte pour finaliser la création de votre boutique.
           </p>
         </div>
 
@@ -86,6 +109,10 @@ function SignupForm() {
             Créer mon compte vendeur
           </button>
         </form>
+
+        <p className="text-center text-[10px] text-gray-400 uppercase tracking-widest">
+          En créant votre compte, vous reconnaissez avoir accepté notre charte vendeur.
+        </p>
 
         <p className="text-center text-xs sm:text-sm text-gray-600">
           Déjà un compte ?{' '}

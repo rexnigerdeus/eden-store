@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter, Montserrat } from 'next/font/google'
 import './globals.css'
-import { CartProvider } from '@/context/CartContext' 
+import { CartProvider } from '@/context/CartContext'
+import SupportBubble from '@/components/SupportBubble'
+import SellerReminderModal from '@/components/SellerReminderModal'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const montserrat = Montserrat({ 
@@ -33,6 +35,9 @@ export default function RootLayout({
       <body className={`${inter.variable} ${montserrat.variable} font-sans bg-white text-black`}>
         <CartProvider>
           {children}
+          {/* Bulle flottante Support Eden + popup "configurez votre boutique" */}
+          <SupportBubble />
+          <SellerReminderModal />
         </CartProvider>
       </body>
     </html>

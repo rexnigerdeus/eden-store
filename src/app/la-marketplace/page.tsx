@@ -86,7 +86,7 @@ export default function LaMarketplacePage() {
               </h2>
               <p className="text-gray-700 text-base md:text-lg leading-relaxed mb-5">
                 Eden Flash Market est née d'un constat simple : trop de talents
-                ivoiriens — entrepreneurs, commerçants, artisans — n'ont pas
+                ivoiriens (entrepreneurs, commerçants, artisans) n'ont pas
                 d'espace professionnel pour présenter leur savoir-faire et vendre
                 en ligne sans dépendre d'une expertise technique.
               </p>

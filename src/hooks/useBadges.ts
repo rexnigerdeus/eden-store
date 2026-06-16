@@ -84,6 +84,7 @@ export function useSellerBadges(shopId: string | null, userId: string | null) {
 // ==========================================
 export function useAdminBadges() {
   const [pendingShops, setPendingShops] = useState(0)
+  const [unreadSupportTickets, setUnreadSupportTickets] = useState(0)
 
   useEffect(() => {
     const supabase = createClient()
@@ -94,6 +95,20 @@ export function useAdminBadges() {
         .select('*', { count: 'exact', head: true })
         .eq('subscription_status', 'pending_verification')
       setPendingShops(count || 0)
+
+      // Tickets de support non lus côté admin :
+      // - statut open OU pending
+      // - dernière réponse est celle de l'utilisateur (last_user_reply_at > last_admin_reply_at)
+      const { data: tickets } = await supabase
+        .from('support_tickets')
+        .select('id, status, last_user_reply_at, last_admin_reply_at')
+        .in('status', ['open', 'pending'])
+      const unread = (tickets || []).filter((t: any) => {
+        if (!t.last_user_reply_at) return true
+        if (!t.last_admin_reply_at) return true
+        return new Date(t.last_user_reply_at).getTime() > new Date(t.last_admin_reply_at).getTime()
+      }).length
+      setUnreadSupportTickets(unread)
     }
 
     fetchCounts()
@@ -104,6 +119,12 @@ export function useAdminBadges() {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'shops' }, () => {
         fetchCounts() // Recharger dès qu'une boutique est modifiée
       })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'support_tickets' }, () => {
+        fetchCounts()
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'support_messages' }, () => {
+        fetchCounts()
+      })
       .subscribe()
 
     return () => { 
@@ -111,7 +132,7 @@ export function useAdminBadges() {
     }
   }, [])
 
-  return { pendingShops }
+  return { pendingShops, unreadSupportTickets }
 }
 
 // ==========================================

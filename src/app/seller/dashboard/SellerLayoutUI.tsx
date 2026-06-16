@@ -49,9 +49,22 @@ export default function SellerLayoutUI({ children, shopName, shopInitial, shopId
         
         <NavLinks onLinkClick={() => setIsMobileMenuOpen(false)} />
 
-        <div className="p-4 border-t border-white/10">
+        <div className="p-4 border-t border-white/10 space-y-3">
+          {/* Bouton retour au site public (comme chez l'admin) */}
+          <Link
+            href="/"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="block w-full text-center py-3 text-[10px] font-montserrat font-bold text-gray-400 uppercase tracking-widest border border-white/20 hover:border-white hover:text-white transition-colors rounded-none"
+          >
+            ↩ Retour au site public
+          </Link>
+
+          {/* Bouton de déconnexion */}
           <form action={logout}>
-            <button type="submit" className="w-full text-center py-3 text-xs font-montserrat font-bold text-gray-400 uppercase tracking-widest border border-white/20 hover:border-white hover:text-white transition-colors rounded-none">
+            <button
+              type="submit"
+              className="w-full text-center py-3 text-[10px] font-montserrat font-bold uppercase tracking-widest text-red-400 border border-red-600/50 hover:border-red-600 hover:bg-red-600 hover:text-white transition-colors rounded-none"
+            >
               Se déconnecter
             </button>
           </form>
