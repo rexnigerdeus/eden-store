@@ -103,15 +103,15 @@ export default function HeroSlider({ slides, autoPlayDelay = 6000 }: HeroSliderP
                   {slide.eyebrow}
                 </p>
                 <h2 className="text-white font-montserrat font-black uppercase tracking-tighter mb-2 md:mb-4 drop-shadow-lg
-                               text-4xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl">
+                               text-xl sm:text-2xl md:text-4xl lg:text-4xl xl:text-6xl">
                   {slide.title}
                 </h2>
-                <p className="text-white text-sm md:text-xl uppercase tracking-[0.3em] font-bold mb-6 md:mb-10 bg-black/50 px-4 py-1 max-w-2xl">
+                <p className="text-white text-sm md:text-base uppercase tracking-[0.3em] font-bold mb-6 md:mb-10 bg-black/50 px-4 py-1 max-w-2xl">
                   {slide.subtitle}
                 </p>
                 <Link
                   href={slide.ctaHref}
-                  className="inline-block bg-white text-black px-8 py-4 md:px-12 md:py-4 font-montserrat font-black text-sm md:text-base uppercase tracking-widest hover:bg-black hover:text-white transition-all duration-300 border-2 border-white"
+                  className="inline-block bg-white text-black px-8 py-4 md:px-12 md:py-4 font-montserrat font-black text-sm md:text-sm uppercase tracking-widest hover:bg-black hover:text-white transition-all duration-300 border-2 border-white"
                 >
                   {slide.ctaLabel}
                 </Link>
