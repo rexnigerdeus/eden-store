@@ -53,6 +53,14 @@ export function getCategoryImageUrl(categoryName: string): string {
   ) {
     return "https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=800&auto=format&fit=crop"
   }
+  // 🍔 REPAS / PÂTISSERIE / ALIMENTATION / NOURRITURE
+  if (
+    name.includes('repas') || name.includes('meal') ||
+    name.includes('Pâtisserie') || name.includes('sweets') ||
+    name.includes('alimentation') || name.includes('dessert')
+  ) {
+    return "https://images.unsplash.com/photo-1565299507177-b0ac66763828?q=80&w=1022&auto=format&fit=crop"
+  }
   // 🧸 ENFANTS / BÉBÉS / JOUETS
   if (
     name.includes('enfant') || name.includes('enfants') ||
