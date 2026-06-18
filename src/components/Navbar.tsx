@@ -161,13 +161,13 @@ export default function Navbar() {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Rechercher un produit..."
-                    className="w-56 lg:w-72 px-4 py-2 bg-transparent text-sm font-bold text-black outline-none placeholder-gray-500"
+                    placeholder="Rechercher..."
+                    className="w-32 lg:w-40 px-3 py-1.5 bg-transparent text-sm font-bold text-black outline-none placeholder-gray-500"
                     aria-label="Rechercher un produit"
                   />
                   <button
                     type="submit"
-                    className="px-3 py-2 bg-black text-white text-xs font-montserrat font-black uppercase tracking-widest hover:bg-gray-900 transition-colors"
+                    className="px-2.5 py-1.5 bg-black text-white text-[10px] font-montserrat font-black uppercase tracking-widest hover:bg-gray-900 transition-colors"
                   >
                     OK
                   </button>
