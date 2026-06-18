@@ -96,12 +96,14 @@ export default function ShopForm({ shop }: { shop: any }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
               <label htmlFor="logo" className={labelClasses}>Logo de la boutique (Optionnel)</label>
-              <input id="logo" name="logo" type="file" accept="image/*" className={`${inputClasses} file:mr-4 file:py-2 file:px-4 file:border-0 file:bg-black file:text-white file:text-xs file:font-bold file:uppercase file:tracking-widest cursor-pointer hover:file:bg-gray-900 p-2`} />
+              <input id="logo" name="logo" type="file" accept="image/jpeg,image/jpg,image/png,image/webp,image/gif,image/bmp,image/tiff,image/avif,image/heic,image/heif,image/x-icon,image/svg+xml" className={`${inputClasses} file:mr-4 file:py-2 file:px-4 file:border-0 file:bg-black file:text-white file:text-xs file:font-bold file:uppercase file:tracking-widest cursor-pointer hover:file:bg-gray-900 p-2`} />
+              <p className="text-[10px] text-gray-500 mt-2">Formats acceptés : JPG, PNG, WebP, GIF, BMP, TIFF, AVIF, HEIC, HEIF, ICO, SVG. Taille max : 8 Mo.</p>
               {shop?.logo_url && <p className="text-[10px] text-green-600 font-bold uppercase tracking-widest mt-2">✓ Logo en ligne</p>}
             </div>
             <div>
               <label htmlFor="banner" className={labelClasses}>Bannière de couverture (Optionnel)</label>
-              <input id="banner" name="banner" type="file" accept="image/*" className={`${inputClasses} file:mr-4 file:py-2 file:px-4 file:border-0 file:bg-black file:text-white file:text-xs file:font-bold file:uppercase file:tracking-widest cursor-pointer hover:file:bg-gray-900 p-2`} />
+              <input id="banner" name="banner" type="file" accept="image/jpeg,image/jpg,image/png,image/webp,image/gif,image/bmp,image/tiff,image/avif,image/heic,image/heif,image/x-icon,image/svg+xml" className={`${inputClasses} file:mr-4 file:py-2 file:px-4 file:border-0 file:bg-black file:text-white file:text-xs file:font-bold file:uppercase file:tracking-widest cursor-pointer hover:file:bg-gray-900 p-2`} />
+              <p className="text-[10px] text-gray-500 mt-2">Formats acceptés : JPG, PNG, WebP, GIF, BMP, TIFF, AVIF, HEIC, HEIF, ICO, SVG. Taille max : 8 Mo.</p>
               {shop?.banner_url && <p className="text-[10px] text-green-600 font-bold uppercase tracking-widest mt-2">✓ Bannière en ligne</p>}
             </div>
           </div>

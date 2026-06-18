@@ -39,14 +39,97 @@ export async function updateShopSettings(formData: FormData) {
   // `Math.random()` produit "0.4829..." qui contient un point, ce que
   // Supabase Storage interprète comme un séparateur d'extension et fait
   // échouer l'upload. On utilise crypto.randomUUID() à la place.
-  const sanitizeExt = (ext: string) => ext.toLowerCase().replace(/[^a-z0-9]/g, '') || 'bin'
+
+  // Liste blanche des types MIME acceptés pour le logo / la bannière.
+  // On accepte un large éventail (JPEG, PNG, WebP, GIF, BMP, TIFF, AVIF,
+  // HEIC/HEIF venant d'iPhone, ICO, et SVG). Le `accept` du formulaire est
+  // un simple indice pour l'UI, mais c'est la validation côté serveur qui
+  // fait foi — c'est elle qui corrige définitivement les bugs d'upload
+  // que l'on observait avec certains types d'images.
+  const ALLOWED_MIME_TYPES = new Set<string>([
+    'image/jpeg',
+    'image/jpg',
+    'image/pjpeg',
+    'image/png',
+    'image/webp',
+    'image/gif',
+    'image/bmp',
+    'image/x-bmp',
+    'image/tiff',
+    'image/avif',
+    'image/heic',
+    'image/heif',
+    'image/x-icon',
+    'image/vnd.microsoft.icon',
+    'image/svg+xml',
+  ])
+
+  // Table de correspondance MIME -> extension de fichier normalisée.
+  // Supabase Storage valide l'extension ; on s'assure donc qu'elle
+  // correspond bien à un format connu, même si le navigateur envoie
+  // un nom de fichier sans extension ou avec une extension inventée.
+  const EXT_BY_MIME: Record<string, string> = {
+    'image/jpeg': 'jpg',
+    'image/jpg': 'jpg',
+    'image/pjpeg': 'jpg',
+    'image/png': 'png',
+    'image/webp': 'webp',
+    'image/gif': 'gif',
+    'image/bmp': 'bmp',
+    'image/x-bmp': 'bmp',
+    'image/tiff': 'tiff',
+    'image/avif': 'avif',
+    'image/heic': 'heic',
+    'image/heif': 'heif',
+    'image/x-icon': 'ico',
+    'image/vnd.microsoft.icon': 'ico',
+    'image/svg+xml': 'svg',
+  }
+
+  // Taille maximale : 8 Mo. Au-delà, Supabase Storage peut rejeter
+  // l'upload ou la requête Next.js peut expirer.
+  const MAX_FILE_SIZE = 8 * 1024 * 1024
+
   const SHOP_BUCKET = 'shop-assets'
+
+  const sanitizeExt = (ext: string) => ext.toLowerCase().replace(/[^a-z0-9]/g, '') || 'bin'
+
+  // Résout l'extension finale à utiliser pour un fichier donné, en
+  // privilégiant le type MIME réel du fichier (source de vérité) puis
+  // l'extension du nom de fichier, en retombant sur `bin` en dernier
+  // recours. On évite ainsi les échecs d'upload causés par des noms
+  // de fichiers exotiques ou absents.
+  const resolveExtension = (file: File): string => {
+    const fromMime = file.type && EXT_BY_MIME[file.type.toLowerCase()]
+    if (fromMime) return fromMime
+    const fromName = sanitizeExt(file.name.split('.').pop() || '')
+    if (fromName && fromName !== 'bin') return fromName
+    return 'bin'
+  }
+
+  const validateImage = (file: File, label: string) => {
+    const mime = (file.type || '').toLowerCase()
+    // 1. Type MIME autorisé
+    if (mime && !ALLOWED_MIME_TYPES.has(mime)) {
+      return `Le fichier "${label}" a un format non pris en charge (${mime || 'inconnu'}). Formats acceptés : JPG, PNG, WebP, GIF, BMP, TIFF, AVIF, HEIC, HEIF, ICO, SVG.`
+    }
+    // 2. Taille maximale
+    if (file.size > MAX_FILE_SIZE) {
+      return `Le fichier "${label}" est trop volumineux (${(file.size / 1024 / 1024).toFixed(1)} Mo). Taille maximale : 8 Mo.`
+    }
+    return null
+  }
 
   const logoFile = formData.get('logo') as File
   if (logoFile && logoFile.size > 0) {
-    const fileExt = sanitizeExt(logoFile.name.split('.').pop() || '')
+    const validationError = validateImage(logoFile, 'logo')
+    if (validationError) return { error: validationError }
+
+    const fileExt = resolveExtension(logoFile)
     const fileName = `${user.id}/logo-${crypto.randomUUID()}.${fileExt}`
-    const { error: uploadError } = await supabase.storage.from(SHOP_BUCKET).upload(fileName, logoFile, { upsert: false })
+    const { error: uploadError } = await supabase.storage
+      .from(SHOP_BUCKET)
+      .upload(fileName, logoFile, { upsert: false, contentType: logoFile.type || `image/${fileExt}` })
     if (uploadError) {
       console.error('[shop-logo-upload]', uploadError)
       return { error: `Erreur lors de l'upload du logo : ${uploadError.message}` }
@@ -57,9 +140,14 @@ export async function updateShopSettings(formData: FormData) {
 
   const bannerFile = formData.get('banner') as File
   if (bannerFile && bannerFile.size > 0) {
-    const fileExt = sanitizeExt(bannerFile.name.split('.').pop() || '')
+    const validationError = validateImage(bannerFile, 'bannière')
+    if (validationError) return { error: validationError }
+
+    const fileExt = resolveExtension(bannerFile)
     const fileName = `${user.id}/banner-${crypto.randomUUID()}.${fileExt}`
-    const { error: uploadError } = await supabase.storage.from(SHOP_BUCKET).upload(fileName, bannerFile, { upsert: false })
+    const { error: uploadError } = await supabase.storage
+      .from(SHOP_BUCKET)
+      .upload(fileName, bannerFile, { upsert: false, contentType: bannerFile.type || `image/${fileExt}` })
     if (uploadError) {
       console.error('[shop-banner-upload]', uploadError)
       return { error: `Erreur lors de l'upload de la bannière : ${uploadError.message}` }
