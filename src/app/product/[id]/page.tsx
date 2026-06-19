@@ -3,6 +3,7 @@ import { supabaseAdmin } from '@/utils/supabase/admin'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Navbar from '@/components/Navbar'
+import ProductGallery from '@/components/ProductGallery'
 import ProductActions from './ProductActions'
 import FavoriteButton from '@/components/FavoriteButton'
 import ReviewSection from '@/components/ReviewSection'
@@ -84,27 +85,18 @@ export default async function ProductPage({
 
       <main className="max-w-[1400px] mx-auto w-full flex flex-col md:flex-row">
         
-        {/* COLONNE GAUCHE : L'IMAGE */}
-        <div className="w-full md:w-[55%] bg-gray-50 relative flex items-center justify-center border-r border-gray-100">
-          {product.cover_image_url ? (
-            <div className="w-full aspect-square md:sticky md:top-20 relative">
-              <img
-                src={product.cover_image_url}
-                alt={product.title}
-                className={`w-full h-full object-contain p-4 md:p-12 ${product.is_available === false ? 'grayscale opacity-80' : ''}`}
-              />
-              {/* Badge "En rupture" pour le grand public */}
-              {product.is_available === false && (
-                <div className="absolute top-4 left-4 bg-red-600 text-white text-xs font-black uppercase tracking-widest px-3 py-2 border-2 border-white shadow-md">
-                  En rupture de stock
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="w-full aspect-square flex items-center justify-center text-gray-300 font-bold uppercase text-xl">
-              Image non disponible
-            </div>
-          )}
+        {/* COLONNE GAUCHE : GALERIE (aperçu unique + thumbnails cliquables) */}
+        <div className="w-full md:w-[55%] bg-gray-50 p-4 md:p-8 border-r border-gray-100">
+          <div className="w-full md:sticky md:top-20">
+            <ProductGallery
+              coverImageUrl={product.cover_image_url}
+              realImageUrl={product.real_image_url}
+              videoUrl={product.video_url}
+              isOutOfStock={product.is_available === false}
+              productTitle={product.title}
+              hasMediaCompliance={!!product.media_compliance_accepted}
+            />
+          </div>
         </div>
 
         {/* COLONNE DROITE : INFOS & ACTIONS */}

@@ -1,5 +1,5 @@
 import { createClient } from '@/utils/supabase/server'
-import { notifyPaymentMade } from './actions'
+import PaymentProofForm from './PaymentProofForm'
 
 export default async function BillingPage() {
   const supabase = await createClient()
@@ -136,15 +136,25 @@ export default async function BillingPage() {
           </div>
 
           {computedStatus === 'pending_verification' ? (
-            <div className="text-center p-6 border-2 border-black bg-gray-100 text-xs sm:text-sm font-black uppercase tracking-widest text-black">
-              ⏳ Nous vérifions votre paiement. Votre compte sera activé sous peu.
+            <div className="space-y-4">
+              <div className="text-center p-6 border-2 border-black bg-gray-100 text-xs sm:text-sm font-black uppercase tracking-widest text-black">
+                ⏳ Nous vérifions votre paiement. Votre compte sera activé sous peu.
+              </div>
+              {shop?.payment_proof_url && (
+                <div className="bg-white border-2 border-black p-4">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2">Capture d'écran envoyée :</p>
+                  <a href={shop.payment_proof_url} target="_blank" rel="noopener noreferrer" className="block">
+                    <img
+                      src={shop.payment_proof_url}
+                      alt="Preuve de paiement"
+                      className="max-h-64 border-2 border-gray-200 hover:border-black transition-colors"
+                    />
+                  </a>
+                </div>
+              )}
             </div>
           ) : (
-            <form action={notifyPaymentMade}>
-              <button type="submit" className="w-full py-5 bg-black text-white font-montserrat font-black uppercase tracking-widest text-sm hover:bg-gray-900 transition-colors border-2 border-black">
-                J'ai effectué mon transfert Mobile Money
-              </button>
-            </form>
+            <PaymentProofForm />
           )}
         </div>
 
