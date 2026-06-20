@@ -222,10 +222,11 @@ export const compressVideo = async (
   // Lecture du fichier de sortie
   onProgress?.({ ratio: 0.95, message: 'Finalisation…' })
 
-  const data = await ffmpeg.readFile(outputName)
+  const data = await ffmpeg.readFile(outputName) as Uint8Array
   // Copie dans un nouveau buffer pour garantir un ArrayBuffer (et non SharedArrayBuffer),
   // requis par le type BlobPart depuis TypeScript 5.7+.
-  const blob = new Blob([new Uint8Array(data)], { type: 'video/mp4' })
+  const bytes = new Uint8Array(data)
+  const blob = new Blob([bytes], { type: 'video/mp4' })
 
   // Nettoyage du FS virtuel
   await safeUnlink(ffmpeg, inputName)
