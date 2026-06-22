@@ -9,6 +9,7 @@ export default function ShopForm({ shop }: { shop: any }) {
   const [errorMessage, setErrorMessage] = useState('')
   
   const [isCopied, setIsCopied] = useState(false)
+  const [shareState, setShareState] = useState<'idle' | 'shared' | 'unsupported'>('idle')
   const [shopUrl, setShopUrl] = useState('')
 
   useEffect(() => {
@@ -24,6 +25,30 @@ export default function ShopForm({ shop }: { shop: any }) {
       setTimeout(() => setIsCopied(false), 2000)
     } catch (err) {
       console.error("Erreur lors de la copie : ", err)
+    }
+  }
+
+  const shareShop = async () => {
+    if (typeof navigator === 'undefined' || !navigator.share) {
+      // Pas d'API Web Share (desktop) -> fallback copie
+      setShareState('unsupported')
+      await copyToClipboard()
+      setTimeout(() => setShareState('idle'), 2000)
+      return
+    }
+    try {
+      await navigator.share({
+        title: shop?.name || 'Ma boutique',
+        text: `Découvrez la boutique ${shop?.name || ''} sur Asim.`,
+        url: shopUrl,
+      })
+      setShareState('shared')
+      setTimeout(() => setShareState('idle'), 2000)
+    } catch (err: any) {
+      // L'utilisateur a annulé le partage
+      if (err?.name !== 'AbortError') {
+        console.error('Erreur de partage :', err)
+      }
     }
   }
 
@@ -53,25 +78,48 @@ export default function ShopForm({ shop }: { shop: any }) {
       
       {/* SECTION : PARTAGER MA BOUTIQUE (Visible si boutique existe) */}
       {shop?.slug && (
-        <section className="bg-gray-50 border-2 border-black p-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="w-full">
+        <section className="bg-gray-50 border-2 border-black p-6">
+          <div className="mb-4">
             <h3 className="text-sm font-montserrat font-black uppercase tracking-widest text-black mb-1">Lien public de votre vitrine</h3>
-            <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Partagez ce lien avec vos clients sur les réseaux.</p>
-            <a href={shopUrl} target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-black hover:underline truncate bg-white px-3 py-1 border border-gray-300 inline-block">
+            <p className="text-xs text-gray-500 uppercase tracking-wider">Partagez ce lien avec vos clients sur les réseaux.</p>
+          </div>
+          <div className="text-sm font-bold text-black bg-white px-3 py-2 border border-gray-300 mb-4 min-w-0">
+            <a
+              href={shopUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block break-all hover:underline"
+              title={shopUrl}
+            >
               {shopUrl}
             </a>
           </div>
-          <button
-            type="button"
-            onClick={copyToClipboard}
-            className={`w-full md:w-auto px-6 py-4 text-xs font-montserrat font-black uppercase tracking-widest transition-colors border-2 shrink-0 ${
-              isCopied 
-                ? 'bg-green-600 border-green-600 text-white' 
-                : 'bg-black border-black text-white hover:bg-gray-900'
-            }`}
-          >
-            {isCopied ? '✓ Lien copié' : 'Copier le lien'}
-          </button>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button
+              type="button"
+              onClick={copyToClipboard}
+              className={`flex-1 px-6 py-4 text-xs font-montserrat font-black uppercase tracking-widest transition-colors border-2 ${
+                isCopied
+                  ? 'bg-green-600 border-green-600 text-white'
+                  : 'bg-black border-black text-white hover:bg-gray-900'
+              }`}
+            >
+              {isCopied ? '✓ Lien copié' : '📋 Copier le lien'}
+            </button>
+            <button
+              type="button"
+              onClick={shareShop}
+              className={`flex-1 px-6 py-4 text-xs font-montserrat font-black uppercase tracking-widest transition-colors border-2 ${
+                shareState === 'shared'
+                  ? 'bg-green-600 border-green-600 text-white'
+                  : 'bg-white border-black text-black hover:bg-black hover:text-white'
+              }`}
+            >
+              {shareState === 'shared' && '✓ Partagé !'}
+              {shareState === 'unsupported' && '✓ Copié (partage indisponible)'}
+              {shareState === 'idle' && '📤 Partager'}
+            </button>
+          </div>
         </section>
       )}
 
